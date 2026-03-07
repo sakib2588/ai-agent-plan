@@ -13,7 +13,7 @@ const C = {
   text: "#E8EAF6", textMid: "#9094B0", textDim: "#3E4268", white: "#FFFFFF",
 };
 
-const TABS = ["Overview", "Learning Path", "Build Plan", "Business Model", "Costs & ROI", "Feasibility"];
+const TABS = ["Overview", "Learning Path", "Build Plan", "Lead Sourcing", "Business Model", "Costs & ROI", "Feasibility"];
 
 const LEARNING = [
   {
@@ -90,6 +90,8 @@ const BUILD_PHASES = [
       { id: "3B", title: "Twilio Phone Integration", diff: "Medium", time: "2–3 hrs", deliverable: "Dedicated number bought, connected to Vapi, real outbound calls working" },
       { id: "3C", title: "Test 50 self-calls with your script", diff: "Medium", time: "2–3 days", deliverable: "Script handles 15+ edge cases without breaking" },
       { id: "3D", title: "Calendly booking integration", diff: "Easy", time: "1–2 hrs", deliverable: "When owner says yes → agent books time slot automatically" },
+      { id: "3E", title: "Free Lead Scraping Pipeline", diff: "Medium", time: "4–6 hrs", deliverable: "200 scraped FSBO leads in a CSV file — Python + BeautifulSoup/Selenium scraper targeting Zillow FSBO listings for your zip codes. Free test pipeline before paying for PropStream.", isNew: true },
+      { id: "3F", title: "Skip Trace Integration", diff: "Medium", time: "3–4 hrs", deliverable: "BatchSkipTracing API connected to n8n workflow. Input: name + address → Output: phone number appended automatically. Pipeline becomes: scrape → skip trace → call. Zero manual steps. 60–70% phone hit rate.", isNew: true },
     ]
   },
   {
@@ -99,6 +101,8 @@ const BUILD_PHASES = [
       { id: "4B", title: "Build CRM lead logging workflow", diff: "Medium", time: "3–4 hrs", deliverable: "Every call auto-logged to Google Sheets or GoHighLevel with outcome + transcript" },
       { id: "4C", title: "Build SMS reminder workflow", diff: "Easy", time: "1–2 hrs", deliverable: "Appointment reminder fires automatically 24hrs before via Twilio SMS" },
       { id: "4D", title: "Lead notification to agent (email/Slack)", diff: "Easy", time: "1 hr", deliverable: "Agent gets instant notification when a qualified lead is found" },
+      { id: "4E", title: "DNC Scrubbing Automation", diff: "Hard", time: "3–5 hrs", deliverable: "Zero calls made to DNC-registered numbers. n8n automatically checks each number against National DNC Registry (via DNC.com or Telnyx API) before every call batch. Flagged numbers removed before dialing. Legal protection — not optional.", isNew: true },
+      { id: "4F", title: "Call Time Zone Logic", diff: "Medium", time: "2–3 hrs", deliverable: "No calls placed outside 8am–9pm local time. EVER. Function checks area code → maps to time zone → gates calls accordingly. Calling outside legal hours = TCPA violation.", isNew: true },
     ]
   },
   {
@@ -108,6 +112,9 @@ const BUILD_PHASES = [
       { id: "5B", title: "Set up GoHighLevel free trial", diff: "Easy", time: "2–3 hrs", deliverable: "CRM pipeline configured with stages: New → Called → Interested → Booked → Closed" },
       { id: "5C", title: "Run first 100-call campaign", diff: "Medium", time: "1–2 days setup", deliverable: "100 calls made, outcomes logged, at least 1–3 real appointments booked" },
       { id: "5D", title: "Analyse results and refine script", diff: "Hard", time: "ongoing", deliverable: "Script v2 based on real call data — conversion rate improving" },
+      { id: "5E", title: "Call Recording + Transcript Storage", diff: "Medium", time: "2–3 hrs", deliverable: "100% of calls have recording + transcript stored and searchable. Vapi records → n8n saves to Google Drive/S3 automatically. Review 10 worst-performing conversations weekly and update script based on exactly where it broke.", isNew: true },
+      { id: "5F", title: "Conversion Rate Dashboard", diff: "Medium", time: "3–4 hrs", deliverable: "Live Google Sheet (auto-updated by n8n) showing: calls made, answered rate, qualified rate, booked rate, cost per lead. This is your client proof AND tells you exactly where funnel is leaking.", isNew: true },
+      { id: "5G", title: "Voicemail Drop Campaign", diff: "Medium", time: "2–3 hrs", deliverable: "Automated voicemail drop on all no-answer attempts (after 2 tries). 15-second pre-recorded message: 'Hi [Name], I was hoping to catch you about your property at [Address]...' Generates 10–20% callback rate on top of live connects.", isNew: true },
     ]
   },
   {
@@ -117,8 +124,57 @@ const BUILD_PHASES = [
       { id: "6B", title: "Create 1-page service offer", diff: "Easy", time: "1–2 hrs", deliverable: "Clear offer: X calls/month, Y qualified leads guaranteed, price" },
       { id: "6C", title: "Onboard first client (use your existing result as proof)", diff: "Hard", time: "ongoing", deliverable: "First paying client at $500–1,500/month minimum" },
       { id: "6D", title: "Document your SOP for client onboarding", diff: "Medium", time: "2–3 hrs", deliverable: "Written process to onboard any new agent in under 2 hours" },
+      { id: "6E", title: "Lead Handoff Workflow", diff: "Hard", time: "4–6 hrs", deliverable: "Agent notified in under 60 seconds of every qualified lead. When lead marked 'interested': n8n texts agent with details, emails full summary with transcript link, creates CRM task with follow-up date, sends homeowner SMS confirming agent will call. All within 60 seconds of call ending.", isNew: true },
+      { id: "6F", title: "Client Reporting Automation", diff: "Medium", time: "3–4 hrs", deliverable: "Automated weekly report email every Monday morning: calls made last week, leads generated, appointments booked, pipeline value estimate. Keeps clients from cancelling — they see the machine working even when nothing booked yet.", isNew: true },
     ]
   },
+];
+
+const FREE_LEAD_SOURCES = [
+  {
+    name: "Zillow FSBO Listings", icon: "🏠", color: C.cyan,
+    how: "Go to Zillow → filter 'For Sale By Owner' in your target city. Copy names, addresses, and listing phone numbers manually.",
+    volume: "50–100 leads/hour", cost: "$0",
+    tip: "Best starting point. Highest intent — these people already want to sell."
+  },
+  {
+    name: "Facebook Marketplace", icon: "📱", color: C.purple,
+    how: "Search 'house for sale' in your city on Facebook Marketplace. FSBO owners post here constantly with personal phone numbers visible.",
+    volume: "30–60 leads/hour", cost: "$0",
+    tip: "Personal phone numbers are often listed directly. Great for skip-trace-free leads."
+  },
+  {
+    name: "Craigslist Housing", icon: "📋", color: C.green,
+    how: "craigslist.org → Housing → For Sale By Owner. Old school but still active in most US cities. Phone numbers posted publicly.",
+    volume: "20–40 leads/hour", cost: "$0",
+    tip: "Less competition than Zillow. Older demographic = more motivated sellers."
+  },
+  {
+    name: "County Tax Records", icon: "🏛️", color: C.amber,
+    how: "Every US county publishes property owner names and mailing addresses online for free. Google '[your county] property search' or '[your county] tax assessor lookup'.",
+    volume: "100+ leads/session", cost: "$0",
+    tip: "Export absentee owner records — owners who don't live at the property are more likely to sell."
+  },
+  {
+    name: "Expired MLS Listings", icon: "⏰", color: C.orange,
+    how: "Ask any licensed real estate agent friend to pull expired listings from MLS. They have free access. You get names and addresses, then skip-trace for phone numbers.",
+    volume: "50–200 leads/pull", cost: "$0 (semi-free)",
+    tip: "Highest motivation tier — these people WANTED to sell and failed. Extremely receptive to outreach."
+  },
+];
+
+const PAID_TOOLS = [
+  { tool: "PropStream", cost: "$1 trial (7 days)", what: "Full lists: FSBO, expired, pre-foreclosure, absentee owners. Skip tracing built-in.", color: C.cyan, rating: 5 },
+  { tool: "BatchLeads", cost: "Free trial", what: "Similar to PropStream with an easier UI. Good for beginners. Pull lists fast.", color: C.green, rating: 4 },
+  { tool: "REDX", cost: "$39–99/mo", what: "Pre-built FSBO + expired caller lists with phone numbers already attached. Plug and play.", color: C.amber, rating: 4 },
+  { tool: "Vulcan7", cost: "$299/mo", what: "Best quality expired listings with direct phone numbers. Premium but highest accuracy.", color: C.purple, rating: 5 },
+];
+
+const SKIP_TRACE_TOOLS = [
+  { tool: "BatchSkipTracing", cost: "$0.15–0.18/record", accuracy: 85, color: C.green },
+  { tool: "PropStream (built-in)", cost: "Included in sub", accuracy: 80, color: C.cyan },
+  { tool: "Skipforce", cost: "$0.12/record", accuracy: 78, color: C.amber },
+  { tool: "Whitepages Pro", cost: "$0.10/record", accuracy: 70, color: C.purple },
 ];
 
 const DIFF = { Easy: C.green, Medium: C.amber, Hard: C.red };
@@ -592,6 +648,9 @@ export default function App() {
                               <span style={{ fontSize: 10, fontWeight: 700, color: C.textDim, minWidth: 22 }}>{task.id}</span>
                               <div style={{ width: 7, height: 7, borderRadius: "50%", background: DIFF[task.diff], flexShrink: 0, boxShadow: `0 0 6px ${DIFF[task.diff]}70` }} />
                               <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{task.title}</span>
+                              {task.isNew && (
+                                <span style={{ fontSize: 8, fontWeight: 800, color: C.bg, background: `linear-gradient(135deg, ${C.amber}, ${C.orange})`, padding: "2px 7px", borderRadius: 99, letterSpacing: 1.5, animation: "glow 2s ease-in-out infinite" }}>NEW</span>
+                              )}
                             </div>
                             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                               <span className="tag" style={{ background: `${DIFF[task.diff]}18`, color: DIFF[task.diff], border: `1px solid ${DIFF[task.diff]}30` }}>{task.diff}</span>
@@ -613,6 +672,295 @@ export default function App() {
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* ══════════════════ LEAD SOURCING ══════════════════ */}
+        {tab === "Lead Sourcing" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+            {/* Hero banner */}
+            <div style={{ padding: "20px 24px", background: `linear-gradient(135deg, ${C.cyan}12, ${C.purple}0A)`, border: `1px solid ${C.cyan}30`, borderRadius: 14, position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: -20, right: -20, width: 120, height: 120, background: `radial-gradient(circle, ${C.cyan}15, transparent)`, borderRadius: "50%" }} />
+              <div style={{ fontSize: 10, fontWeight: 800, color: C.cyan, letterSpacing: 3, marginBottom: 8 }}>⚡ LEAD SOURCING PLAYBOOK</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: C.white, marginBottom: 8, lineHeight: 1.4 }}>
+                Where to Get Leads for Full Testing — <span style={{ color: C.amber }}>200+ Free Leads in One Afternoon</span>
+              </div>
+              <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.7 }}>
+                Start with the free sources below. That's 200+ leads without spending a dime. Once validated, graduate to paid tools for scale.
+                The pipeline: <span style={{ color: C.cyan, fontWeight: 600 }}>Source leads</span> → <span style={{ color: C.green, fontWeight: 600 }}>Skip trace for numbers</span> → <span style={{ color: C.amber, fontWeight: 600 }}>Feed into your AI caller</span>.
+              </div>
+            </div>
+
+            {/* Free sources */}
+            <Card>
+              <SectionHeader color={C.green}>Free Lead Sources — Start Here (Zero Cost)</SectionHeader>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {FREE_LEAD_SOURCES.map((src, i) => (
+                  <div key={i} className="card-hover" style={{
+                    padding: "18px 20px", background: C.surfaceHigh,
+                    border: `1px solid ${src.color}20`, borderLeft: `4px solid ${src.color}`,
+                    borderRadius: 10, transition: "all 0.15s",
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 10, background: `${src.color}15`, border: `1px solid ${src.color}30`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
+                          {src.icon}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: C.white }}>{src.name}</div>
+                          <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                            <span className="tag" style={{ background: `${C.green}18`, color: C.green, border: `1px solid ${C.green}30` }}>{src.cost}</span>
+                            <span className="tag" style={{ background: `${C.cyan}18`, color: C.cyan, border: `1px solid ${C.cyan}30` }}>{src.volume}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.7, marginBottom: 10 }}>{src.how}</div>
+                    <div style={{ padding: "8px 12px", background: `${src.color}08`, border: `1px solid ${src.color}18`, borderRadius: 6, fontSize: 11, color: src.color }}>
+                      <span style={{ fontWeight: 700 }}>💡 Pro Tip: </span>{src.tip}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick math */}
+              <div style={{ marginTop: 16, padding: "16px 20px", background: `linear-gradient(135deg, ${C.green}0C, ${C.amber}08)`, border: `1px solid ${C.green}30`, borderRadius: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 28 }}>📊</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.green }}>Quick Math: Free Sources Combined</div>
+                    <div style={{ fontSize: 12, color: C.textMid, marginTop: 4 }}>
+                      Zillow (100) + Facebook Marketplace (60) + Craigslist (40) = <span style={{ color: C.amber, fontWeight: 800, fontSize: 14 }}>200+ free leads</span> in one afternoon.
+                      That's enough to validate your entire pipeline without spending a dollar.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Paid tools */}
+            <Card>
+              <SectionHeader color={C.amber}>Paid Tools — Cheap for Testing, Powerful for Scale</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
+                {PAID_TOOLS.map((tool, i) => (
+                  <div key={i} className="card-hover" style={{
+                    padding: "18px 20px", background: C.surfaceHigh,
+                    border: `1px solid ${tool.color}25`, borderRadius: 10,
+                    position: "relative", overflow: "hidden", transition: "all 0.15s",
+                  }}>
+                    <div style={{ position: "absolute", top: 0, right: 0, width: 60, height: 60, background: `radial-gradient(circle at top right, ${tool.color}12, transparent)` }} />
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: tool.color }}>{tool.tool}</div>
+                      <div style={{ padding: "4px 10px", background: `${C.amber}15`, border: `1px solid ${C.amber}30`, borderRadius: 99, fontSize: 11, fontWeight: 700, color: C.amber }}>{tool.cost}</div>
+                    </div>
+                    <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.7, marginBottom: 12 }}>{tool.what}</div>
+                    <div style={{ display: "flex", gap: 3 }}>
+                      {Array.from({ length: 5 }).map((_, j) => (
+                        <div key={j} style={{ width: 20, height: 4, borderRadius: 2, background: j < tool.rating ? tool.color : C.border }} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 14, padding: "12px 16px", background: `${C.amber}0A`, border: `1px solid ${C.amber}25`, borderRadius: 8, fontSize: 12, color: C.textMid }}>
+                <span style={{ color: C.amber, fontWeight: 700 }}>Recommendation for testing: </span>
+                Start with <span style={{ color: C.cyan, fontWeight: 600 }}>PropStream's $1 trial</span> to validate paid sources work, then decide if you need ongoing access. Most of what you need for first 100 calls is free.
+              </div>
+            </Card>
+
+            {/* Skip Tracing */}
+            <Card>
+              <SectionHeader color={C.purple}>Skip Tracing — Getting Phone Numbers from Addresses</SectionHeader>
+              <div style={{ padding: "12px 16px", background: `${C.purple}0A`, border: `1px solid ${C.purple}25`, borderRadius: 8, marginBottom: 16, fontSize: 12, color: C.textMid, lineHeight: 1.7 }}>
+                Once you have names and addresses from county records or MLS, you need <span style={{ color: C.purple, fontWeight: 600 }}>phone numbers</span>.
+                Skip tracing services match property records to phone databases. Budget $0.10–0.18 per record. At 200 leads, that's <span style={{ color: C.amber, fontWeight: 700 }}>$20–36 total</span>.
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+                {SKIP_TRACE_TOOLS.map((tool, i) => (
+                  <div key={i} style={{ padding: "16px 18px", background: C.surfaceHigh, border: `1px solid ${tool.color}25`, borderRadius: 10 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: tool.color, marginBottom: 6 }}>{tool.tool}</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: C.amber }}>{tool.cost}</span>
+                    </div>
+                    <div style={{ marginBottom: 6 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, fontWeight: 700, color: C.textDim, marginBottom: 4 }}>
+                        <span>ACCURACY</span>
+                        <span style={{ color: tool.color }}>{tool.accuracy}%</span>
+                      </div>
+                      <AnimatedBar pct={tool.accuracy} color={tool.color} height={6} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Pipeline visual */}
+            <Card>
+              <SectionHeader color={C.cyan}>The Complete Lead Pipeline — From Source to Call</SectionHeader>
+              <div style={{ overflowX: "auto" }}>
+                <div style={{ display: "flex", alignItems: "stretch", gap: 0, minWidth: 900, marginBottom: 16 }}>
+                  {[
+                    { step: "1", label: "Source Leads", sub: "Zillow / FB / County", icon: "📋", color: C.cyan, detail: "Scrape FSBO listings or pull county records" },
+                    null,
+                    { step: "2", label: "Clean & Dedupe", sub: "Remove duplicates", icon: "🧹", color: C.green, detail: "Standardize addresses, remove dupes" },
+                    null,
+                    { step: "3", label: "Skip Trace", sub: "Get phone numbers", icon: "🔍", color: C.purple, detail: "BatchSkipTracing API via n8n" },
+                    null,
+                    { step: "4", label: "DNC Scrub", sub: "Legal compliance", icon: "🛡️", color: C.red, detail: "Remove DNC-registered numbers" },
+                    null,
+                    { step: "5", label: "Time Zone Gate", sub: "8am–9pm local", icon: "🕐", color: C.amber, detail: "Only call in legal hours" },
+                    null,
+                    { step: "6", label: "Vapi Calls", sub: "AI cold-calls", icon: "📞", color: C.green, detail: "Automated outbound dialing" },
+                    null,
+                    { step: "7", label: "Qualify & Route", sub: "CRM + Agent", icon: "💰", color: C.amber, detail: "Hot leads → agent in <60 seconds" },
+                  ].map((node, i) => node === null ? (
+                    <div key={i} style={{ display: "flex", alignItems: "center", padding: "0 2px", flexShrink: 0 }}>
+                      <div style={{ width: 24, height: 2, background: `linear-gradient(90deg, ${C.border}, ${C.borderHigh})` }} />
+                      <div style={{ width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: `6px solid ${C.borderHigh}` }} />
+                    </div>
+                  ) : (
+                    <div key={i} style={{
+                      padding: "14px 12px", textAlign: "center", flexShrink: 0,
+                      background: `${node.color}0A`, border: `1px solid ${node.color}25`,
+                      borderRadius: 10, minWidth: 95, position: "relative",
+                    }}>
+                      <div style={{ position: "absolute", top: 6, left: 8, fontSize: 8, fontWeight: 800, color: node.color, background: `${node.color}20`, padding: "1px 5px", borderRadius: 4, letterSpacing: 1 }}>
+                        STEP {node.step}
+                      </div>
+                      <div style={{ fontSize: 22, marginBottom: 4, marginTop: 8 }}>{node.icon}</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: node.color, marginBottom: 2 }}>{node.label}</div>
+                      <div style={{ fontSize: 9, color: C.textDim }}>{node.sub}</div>
+                      <div style={{ fontSize: 9, color: C.textMid, marginTop: 4, lineHeight: 1.4 }}>{node.detail}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 4 }}>
+                {[
+                  { label: "Leads In", value: "200", sub: "from free sources", color: C.cyan },
+                  { label: "Numbers Found", value: "130–140", sub: "65–70% skip trace hit rate", color: C.green },
+                  { label: "After DNC Scrub", value: "~110", sub: "clean, legal, callable", color: C.amber },
+                ].map((stat, i) => (
+                  <div key={i} style={{ padding: "14px 16px", background: C.surfaceHigh, border: `1px solid ${stat.color}25`, borderRadius: 8, textAlign: "center" }}>
+                    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 26, fontWeight: 800, color: stat.color, textShadow: `0 0 14px ${stat.color}50` }}>{stat.value}</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: C.text, marginTop: 2 }}>{stat.label}</div>
+                    <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>{stat.sub}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* New tasks summary */}
+            <Card>
+              <SectionHeader color={C.orange}>New Build Plan Tasks — Lead Sourcing, Compliance & Analytics</SectionHeader>
+              <div style={{ padding: "12px 16px", background: `${C.orange}0A`, border: `1px solid ${C.orange}25`, borderRadius: 8, marginBottom: 16, fontSize: 12, color: C.textMid, lineHeight: 1.7 }}>
+                <span style={{ color: C.orange, fontWeight: 700 }}>8 new tasks</span> added across Phases 3–6 to fill the real gaps: lead sourcing, legal compliance, analytics, and client retention.
+                These are what matter most for actually running this as a <span style={{ color: C.amber, fontWeight: 600 }}>paid service</span> rather than just a demo.
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {[
+                  { id: "3E", phase: "W3", title: "Free Lead Scraping Pipeline", desc: "Python scraper → 200 FSBO leads in a CSV", color: C.green, icon: "🕷️", category: "Lead Sourcing" },
+                  { id: "3F", phase: "W3", title: "Skip Trace Integration", desc: "Scrape → skip trace → call. Zero manual steps", color: C.green, icon: "🔗", category: "Lead Sourcing" },
+                  { id: "4E", phase: "W4", title: "DNC Scrubbing Automation", desc: "Auto-check DNC registry before every call batch", color: C.amber, icon: "🛡️", category: "Compliance" },
+                  { id: "4F", phase: "W4", title: "Call Time Zone Logic", desc: "No calls outside 8am–9pm local. TCPA compliance", color: C.amber, icon: "🕐", category: "Compliance" },
+                  { id: "5E", phase: "W5–6", title: "Call Recording + Transcripts", desc: "100% of calls recorded and searchable", color: C.orange, icon: "🎙️", category: "Analytics" },
+                  { id: "5F", phase: "W5–6", title: "Conversion Rate Dashboard", desc: "Live funnel metrics: calls → answers → leads → booked", color: C.orange, icon: "📊", category: "Analytics" },
+                  { id: "5G", phase: "W5–6", title: "Voicemail Drop Campaign", desc: "Auto voicemail after 2 failed attempts. +10–20% callbacks", color: C.orange, icon: "📱", category: "Growth" },
+                  { id: "6E", phase: "W7–8", title: "Lead Handoff Workflow", desc: "Agent notified <60s: SMS + email + CRM + homeowner confirm", color: C.pink, icon: "⚡", category: "Delivery" },
+                  { id: "6F", phase: "W7–8", title: "Client Reporting Automation", desc: "Weekly email report: calls, leads, bookings. Auto-sends Monday", color: C.pink, icon: "📧", category: "Retention" },
+                ].map((task, i) => (
+                  <div key={i} className="card-hover" style={{
+                    padding: "14px 16px", background: C.surfaceHigh,
+                    border: `1px solid ${task.color}20`, borderLeft: `3px solid ${task.color}`,
+                    borderRadius: 8, display: "flex", gap: 12, alignItems: "flex-start", transition: "all 0.15s",
+                  }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 8, background: `${task.color}12`, border: `1px solid ${task.color}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
+                      {task.icon}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: task.color, letterSpacing: 1 }}>{task.id}</span>
+                        <span style={{ fontSize: 8, fontWeight: 700, color: C.bg, background: `linear-gradient(135deg, ${C.amber}, ${C.orange})`, padding: "1px 6px", borderRadius: 99, letterSpacing: 1 }}>NEW</span>
+                        <span className="tag" style={{ background: `${task.color}15`, color: task.color, border: `1px solid ${task.color}25`, fontSize: 9 }}>{task.category}</span>
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: C.white, marginBottom: 3 }}>{task.title}</div>
+                      <div style={{ fontSize: 11, color: C.textMid, lineHeight: 1.5 }}>{task.desc}</div>
+                      <div style={{ fontSize: 9, color: C.textDim, marginTop: 4 }}>Phase: {task.phase}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Testing strategy callout */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <Card color={C.green}>
+                <SectionHeader color={C.green}>Quick-Start Testing Strategy</SectionHeader>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {[
+                    { step: "1", task: "Scrape 100 leads from Zillow FSBO", time: "1 hour", cost: "$0" },
+                    { step: "2", task: "Grab 50 leads from Facebook Marketplace", time: "30 min", cost: "$0" },
+                    { step: "3", task: "Pull 50 from Craigslist Housing", time: "30 min", cost: "$0" },
+                    { step: "4", task: "Skip trace all 200 via BatchSkipTracing", time: "10 min", cost: "$30–36" },
+                    { step: "5", task: "DNC scrub the phone list", time: "5 min", cost: "$0 (free check)" },
+                    { step: "6", task: "Load into Vapi + n8n and start calling", time: "15 min", cost: "$0 (trial)" },
+                  ].map((s, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 8 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: "50%", background: `${C.green}20`, border: `1px solid ${C.green}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: C.green, flexShrink: 0 }}>
+                        {s.step}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{s.task}</div>
+                        <div style={{ display: "flex", gap: 10, marginTop: 3 }}>
+                          <span style={{ fontSize: 10, color: C.textDim }}>⏱ {s.time}</span>
+                          <span style={{ fontSize: 10, color: s.cost === "$0" ? C.green : C.amber, fontWeight: 600 }}>{s.cost}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 12, padding: "10px 14px", background: `${C.green}0A`, border: `1px solid ${C.green}25`, borderRadius: 8, textAlign: "center" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2, marginBottom: 4 }}>TOTAL TEST BUDGET</div>
+                  <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 24, fontWeight: 800, color: C.green, textShadow: `0 0 14px ${C.green}50` }}>~$30–36</div>
+                  <div style={{ fontSize: 11, color: C.textMid, marginTop: 3 }}>For 200 leads with phone numbers, DNC-scrubbed, ready to call</div>
+                </div>
+              </Card>
+
+              <Card color={C.red}>
+                <SectionHeader color={C.red}>⚠️ Compliance Checklist — Non-Negotiable</SectionHeader>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {[
+                    { rule: "DNC Registry Check", desc: "Every number must be checked against the National DNC Registry before dialing. $500–$1,500 fine PER illegal call.", severity: "Critical", icon: "🛡️" },
+                    { rule: "Time Zone Compliance", desc: "Only call between 8am–9pm in the recipient's LOCAL time zone. Area code → time zone mapping required.", severity: "Critical", icon: "🕐" },
+                    { rule: "Call Recording Disclosure", desc: "Many states require two-party consent for recording. Your AI agent must disclose recording at the start of each call.", severity: "High", icon: "🎙️" },
+                    { rule: "Caller ID Accuracy", desc: "Spoofing caller ID is illegal under the Truth in Caller ID Act. Your Twilio number must be legitimate and registered.", severity: "High", icon: "📞" },
+                    { rule: "Opt-Out Mechanism", desc: "Every call must offer a clear way to opt out of future calls. 'Press 2 to be removed from our list' — and actually remove them.", severity: "High", icon: "🚫" },
+                    { rule: "TCPA Legal Review", desc: "Budget $200–500 for a TCPA-specialized attorney to review your system before the first live campaign. Not optional.", severity: "Critical", icon: "⚖️" },
+                  ].map((item, i) => (
+                    <div key={i} style={{
+                      padding: "12px 14px", background: C.surfaceHigh,
+                      border: `1px solid ${item.severity === "Critical" ? C.red + "40" : C.amber + "30"}`,
+                      borderRadius: 8,
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 15 }}>{item.icon}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: item.severity === "Critical" ? C.red : C.amber }}>{item.rule}</span>
+                        </div>
+                        <span className="tag" style={{
+                          background: item.severity === "Critical" ? C.redGlow : `${C.amber}18`,
+                          color: item.severity === "Critical" ? C.red : C.amber,
+                          border: `1px solid ${item.severity === "Critical" ? C.red : C.amber}30`,
+                        }}>{item.severity}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.6, paddingLeft: 23 }}>{item.desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+
           </div>
         )}
 
