@@ -1,173 +1,201 @@
 import { useState, useEffect } from "react";
 
 const C = {
-  bg: "#06070F",
-  surface: "#0C0E1C",
-  surfaceHigh: "#111428",
-  surfaceHover: "#161930",
-  border: "#1E2236",
-  borderHigh: "#2A2E4A",
-  amber: "#F5A623",
-  amberGlow: "#F5A62340",
-  amberDim: "#7A5212",
-  cyan: "#00D4FF",
-  cyanGlow: "#00D4FF30",
-  cyanDim: "#004D5E",
-  green: "#00E676",
-  greenGlow: "#00E67630",
-  greenDim: "#004D1F",
-  red: "#FF5252",
-  redGlow: "#FF525230",
-  redDim: "#5C1010",
-  purple: "#B39DDB",
-  purpleGlow: "#B39DDB30",
-  purpleDim: "#3B2F6B",
-  orange: "#FF7043",
-  orangeDim: "#5C1F0A",
-  pink: "#F06292",
-  pinkDim: "#5C0F2A",
-  text: "#E8EAF6",
-  textMid: "#9094B0",
-  textDim: "#3E4268",
-  white: "#FFFFFF",
+  bg: "#06070F", surface: "#0C0E1C", surfaceHigh: "#111428", surfaceHover: "#161930",
+  border: "#1E2236", borderHigh: "#2A2E4A",
+  amber: "#F5A623", amberGlow: "#F5A62340", amberDim: "#7A5212",
+  cyan: "#00D4FF", cyanGlow: "#00D4FF30", cyanDim: "#004D5E",
+  green: "#00E676", greenGlow: "#00E67630", greenDim: "#004D1F",
+  red: "#FF5252", redGlow: "#FF525230", redDim: "#5C1010",
+  purple: "#B39DDB", purpleGlow: "#B39DDB30", purpleDim: "#3B2F6B",
+  orange: "#FF7043", orangeDim: "#5C1F0A",
+  pink: "#F06292", pinkDim: "#5C0F2A",
+  text: "#E8EAF6", textMid: "#9094B0", textDim: "#3E4268", white: "#FFFFFF",
 };
 
-const PHASES = [
+const TABS = ["Overview", "Learning Path", "Build Plan", "Business Model", "Costs & ROI", "Feasibility"];
+
+const LEARNING = [
   {
-    id: 1, label: "P1", title: "Foundation & Environment", weeks: [1, 2],
-    color: C.cyan, dim: C.cyanDim, pct: 5,
+    step: 1, title: "Vapi Quickstart Docs", time: "2–3 hrs", diff: "Easy",
+    color: C.cyan, icon: "📖",
+    url: "https://docs.vapi.ai/assistants/quickstart",
+    what: ["Create a voice assistant from scratch", "Attach a real phone number to it", "Make your first inbound and outbound calls"],
+    why: "This is step zero. You cannot build anything without understanding how Vapi's core objects work. Do this before touching any code.",
+    deliverable: "Working Vapi assistant that answers a call and has a basic conversation",
+  },
+  {
+    step: 2, title: "15-Minute Voice Agent Tutorial", time: "15 min + 1 hr practice", diff: "Easy",
+    color: C.green, icon: "⚡",
+    url: null,
+    what: ["Create first AI voice agent end-to-end", "Write and attach a system prompt", "Test real phone calls immediately"],
+    why: "Fastest way to get something working and calling. Builds confidence before tackling the full course.",
+    deliverable: "First complete agent calling your phone with a real conversation prompt",
+  },
+  {
+    step: 3, title: "Full Vapi + n8n Beginner Course", time: "8–12 hrs", diff: "Medium",
+    color: C.purple, icon: "🎓",
+    url: null,
+    what: ["Full voice AI architecture from first principles", "Connecting AI to n8n automation workflows", "Building production-scale calling campaigns"],
+    why: "This is where the business side becomes possible. n8n is how you scale from 1 call to 10,000 calls without manual work.",
+    deliverable: "Automated campaign that pulls leads, calls them, and logs outcomes without touching it",
+  },
+  {
+    step: 4, title: "Real Estate Lead-Qualifier Tutorial", time: "3–4 hrs", diff: "Medium",
+    color: C.amber, icon: "🏠",
+    url: null,
+    what: ["AI cold-calling system for real estate specifically", "Automatically qualify motivated sellers", "Save qualified leads directly to CRM"],
+    why: "This is your exact use case. Study the script structure, the objection handling, and how they define a 'qualified lead' — this becomes your product.",
+    deliverable: "Real estate specific agent script that qualifies sellers and routes interested leads",
+  },
+  {
+    step: 5, title: "Twilio Phone Integration", time: "2–3 hrs", diff: "Medium",
+    color: C.orange, icon: "📞",
+    url: null,
+    what: ["Buy and configure a real phone number", "Route all calls through your Vapi agent", "Connect Twilio phone infrastructure to Vapi"],
+    why: "Vapi uses Twilio under the hood anyway. Understanding this layer helps you debug call quality issues and manage phone numbers at scale for multiple clients.",
+    deliverable: "Dedicated phone number per client routing all calls through your agent system",
+  },
+  {
+    step: 6, title: "Advanced n8n Automation", time: "4–6 hrs", diff: "Medium",
+    color: C.pink, icon: "⚙️",
+    url: null,
+    what: ["Complex workflow automation across 100+ apps", "Push lead data automatically into any CRM", "Schedule appointments and send confirmations"],
+    why: "This is what makes you scalable. One n8n workflow handles CRM updates, email notifications, Slack alerts, calendar bookings — fully hands-free after setup.",
+    deliverable: "Full n8n workflow: call ends → CRM updated → agent notified → calendar booked → SMS sent",
+  },
+];
+
+const BUILD_PHASES = [
+  {
+    id: 1, label: "W1", title: "Learn & First Agent", weeks: [1, 1], color: C.cyan, pct: 0,
     tasks: [
-      { id: "1A", title: "Dev Environment Setup", week: 1, span: 0.4, diff: "Easy", deliverable: "Working local dev environment", desc: "Python 3.11+, Git, VS Code, virtual environment, Docker basics. This takes half a day — don't spend a week on it." },
-      { id: "1B", title: "Prompt Engineering Course", week: 1, span: 0.6, diff: "Easy", deliverable: "First draft of your real estate conversation prompt", desc: "~8 hours. Focus: system prompts, conversation flow, objection handling, few-shot examples. This directly produces your first agent script." },
-      { id: "1C", title: "Agentic Workflows Course", week: 2, span: 0.7, diff: "Medium", deliverable: "Written diagram of your agent decision tree", desc: "~10 hours. Focus: tool calling, state machines, decision trees, multi-step flows. Draw the decision tree before writing any code." },
-      { id: "1D", title: "LiveKit Agents Docs", week: 2, span: 0.5, diff: "Medium", deliverable: "You understand full architecture before writing code", desc: "~6 hours. VoicePipelineAgent, AgentSession, plugins, telephony overview. Read end-to-end before starting Phase 2." },
+      { id: "1A", title: "Complete Vapi Quickstart Docs", diff: "Easy", time: "2–3 hrs", deliverable: "Vapi account + first assistant created + test call made to your phone" },
+      { id: "1B", title: "15-Min Tutorial — First Working Agent", diff: "Easy", time: "15 min + practice", deliverable: "Agent answers your phone with a real conversation" },
+      { id: "1C", title: "Write First Real Estate Script v1", diff: "Medium", time: "3–4 hrs", deliverable: "Script covering: intro, qualify, 5 objections, book appointment, end call" },
     ]
   },
   {
-    id: 2, label: "P2", title: "Core Voice Pipeline", weeks: [3, 4],
-    color: C.purple, dim: C.purpleDim, pct: 15,
+    id: 2, label: "W2", title: "Full Course + Automation Foundation", weeks: [2, 2], color: C.purple, pct: 15,
     tasks: [
-      { id: "2A", title: "Install & Run Pipecat Examples", week: 3, span: 0.4, diff: "Easy", deliverable: "Working local chatbot you can talk to in terminal", desc: "Clone pipecat repo. Run their example voice agent locally. Understand Frame flow: AudioFrame → TextFrame → AudioFrame. This is your foundation." },
-      { id: "2B", title: "Swap In Local Models", week: 3, span: 0.8, diff: "Medium", deliverable: "Full local STT→LLM→TTS pipeline. 3–6s latency expected — fine for now", desc: "STT: Whisper base (CPU). LLM: Llama 3.1 8B via Ollama (GPU). TTS: Piper TTS (CPU). Wire all three together in Pipecat." },
-      { id: "2C", title: "Build Voice Activity Detection", week: 3, span: 0.5, diff: "Medium", deliverable: "VAD working correctly in 90% of test cases", desc: "Silero VAD (free, open source). Test with background noise — TV on, music playing. Log every false trigger. Fix the threshold." },
-      { id: "2D", title: "Build Interruption Handler", week: 4, span: 0.8, diff: "Hard", deliverable: "AI stops talking immediately when you interrupt. Test 20+ times.", desc: "When you speak while AI responds: cut TTS stream mid-sentence. Don't finish the thought. Listen. Resume naturally. Requires cancelling on UserStartedSpeakingFrame." },
-      { id: "2E", title: "Conversation State Manager", week: 4, span: 0.7, diff: "Medium", deliverable: "State object that correctly tracks a full mock conversation", desc: "Stages: INTRO → QUALIFY → OBJECTION → BOOK → END. Python dataclass holding current stage, property data, owner name, objections raised so far." },
+      { id: "2A", title: "Full Vapi + n8n Course", diff: "Medium", time: "8–12 hrs", deliverable: "Understand full architecture: Vapi → webhook → n8n → CRM" },
+      { id: "2B", title: "Install n8n locally (free)", diff: "Easy", time: "1 hr", deliverable: "n8n running on your machine, basic workflow created" },
+      { id: "2C", title: "Connect Vapi webhook to n8n", diff: "Medium", time: "2–3 hrs", deliverable: "Call ends → n8n receives outcome data automatically" },
     ]
   },
   {
-    id: 3, label: "P3", title: "Telephony Integration", weeks: [5, 6],
-    color: C.green, dim: C.greenDim, pct: 25,
+    id: 3, label: "W3", title: "Real Estate Script + Twilio", weeks: [3, 3], color: C.green, pct: 25,
     tasks: [
-      { id: "3A", title: "Telnyx SIP Docs + Account", week: 5, span: 0.4, diff: "Medium", deliverable: "Telnyx account ready, SIP config understood", desc: "~3 hours. SIP trunking, outbound dialing, audio codec (mulaw G.711). Create free Telnyx account. Read outbound calling guide fully." },
-      { id: "3B", title: "LiveKit SIP Bridge Setup", week: 5, span: 0.8, diff: "Hard", deliverable: "You can trigger a call to your phone from your code", desc: "Telnyx → LiveKit SIP → your agent. PSTN call becomes WebRTC room participant your agent can hear and speak to. Follow LiveKit telephony docs exactly — don't improvise." },
-      { id: "3C", title: "First Real Call To Yourself", week: 5, span: 0.4, diff: "Medium", deliverable: "First successful end-to-end phone conversation with your agent", desc: "Your agent calls your phone. You answer. It says hello. You talk. It responds. Even at 4s latency — this is a major milestone. Record and listen back." },
-      { id: "3D", title: "Voicemail Detection (AMD)", week: 6, span: 0.8, diff: "Hard", deliverable: "Agent correctly identifies voicemail 80%+ of the time", desc: "Answering Machine Detection. Detect within 3 seconds, play 15-second message, hang up. Use audio energy + pause pattern analysis. Known hard problem — budget extra time here." },
-      { id: "3E", title: "Call Outcome Logging", week: 6, span: 0.5, diff: "Easy", deliverable: "Every test call has a complete log entry you can review", desc: "Log: timestamp, number called, duration, outcome (answered/voicemail/no-answer/interested/booked), full transcript. SQLite locally first." },
-      { id: "3F", title: "Retry & Scheduling Logic", week: 6, span: 0.5, diff: "Medium", deliverable: "Automated retry system running on test data", desc: "No answer → retry in 4hrs. Voicemail → next day different time. 'Call Thursday' → schedule Thursday. DNC requested → flag permanently. Use APScheduler." },
+      { id: "3A", title: "Real Estate Lead-Qualifier Tutorial", diff: "Medium", time: "3–4 hrs", deliverable: "Agent correctly qualifies a motivated seller and routes to booking" },
+      { id: "3B", title: "Twilio Phone Integration", diff: "Medium", time: "2–3 hrs", deliverable: "Dedicated number bought, connected to Vapi, real outbound calls working" },
+      { id: "3C", title: "Test 50 self-calls with your script", diff: "Medium", time: "2–3 days", deliverable: "Script handles 15+ edge cases without breaking" },
+      { id: "3D", title: "Calendly booking integration", diff: "Easy", time: "1–2 hrs", deliverable: "When owner says yes → agent books time slot automatically" },
     ]
   },
   {
-    id: 4, label: "P4", title: "Conversation Logic & Prompts", weeks: [7, 8],
-    color: C.amber, dim: C.amberDim, pct: 33,
+    id: 4, label: "W4", title: "Full Automation Pipeline", weeks: [4, 4], color: C.amber, pct: 35,
     tasks: [
-      { id: "4A", title: "Write Full Conversation Script v1", week: 7, span: 0.8, diff: "Hard", deliverable: "Document with every conversation branch mapped", desc: "Cover all branches: intro, qualify, 8 objections, price deflection, spouse handoff, angry owner, 'is this a robot', booking, end call. Write it in a doc BEFORE touching code." },
-      { id: "4B", title: "Convert Script to System Prompt", week: 7, span: 0.5, diff: "Medium", deliverable: "System prompt under 2000 tokens", desc: "Translate conversation doc into structured system prompt: persona definition, rules, property context injection, response length limits, tone, tool calling instructions." },
-      { id: "4C", title: "Test 20 Edge Cases On Yourself", week: 7, span: 0.5, diff: "Medium", deliverable: "List of 20 test cases with pass/fail results", desc: "Call yourself and manually trigger each edge case. Record every failure. Update prompt after each one. Don't move on until you have 20 distinct scenarios documented." },
-      { id: "4D", title: "Property Data Injection", week: 8, span: 0.5, diff: "Medium", deliverable: "Agent correctly references property details mid-conversation", desc: "Agent must know: owner name, address, estimated value, last sale date, days on market if listed. Write function that injects this into prompt context before each call starts." },
-      { id: "4E", title: "Prompt Refinement Cycle", week: 8, span: 0.8, diff: "Hard", deliverable: "Prompt v3+ with documented change log", desc: "30 more self-calls. Have a friend act as homeowner with zero coaching. Find every failure. Rewrite until 80% of conversations reach the qualification stage." },
-      { id: "4F", title: "'Is This A Robot?' Handler", week: 8, span: 0.5, diff: "Hard", deliverable: "Single best response that passes robot test in 7/10 tries", desc: "The most critical single moment. Honest, non-defensive response that keeps the call alive. Test 10 different variations. Pick the one with best call retention." },
+      { id: "4A", title: "Advanced n8n Automation Course", diff: "Medium", time: "4–6 hrs", deliverable: "Comfortable building multi-step n8n workflows" },
+      { id: "4B", title: "Build CRM lead logging workflow", diff: "Medium", time: "3–4 hrs", deliverable: "Every call auto-logged to Google Sheets or GoHighLevel with outcome + transcript" },
+      { id: "4C", title: "Build SMS reminder workflow", diff: "Easy", time: "1–2 hrs", deliverable: "Appointment reminder fires automatically 24hrs before via Twilio SMS" },
+      { id: "4D", title: "Lead notification to agent (email/Slack)", diff: "Easy", time: "1 hr", deliverable: "Agent gets instant notification when a qualified lead is found" },
     ]
   },
   {
-    id: 5, label: "P5", title: "CRM & Booking Integration", weeks: [9, 10],
-    color: C.orange, dim: C.orangeDim, pct: 40,
+    id: 5, label: "W5–6", title: "Lead Source + Full Test", weeks: [5, 6], color: C.orange, pct: 50,
     tasks: [
-      { id: "5A", title: "Mock CRM Data Layer", week: 9, span: 0.4, diff: "Easy", deliverable: "50 fake leads ready to feed into your agent", desc: "Local SQLite/JSON mimicking your CRM: owner_name, phone, address, property_value, notes, call_history, status. Write seed script with 50 realistic fake leads." },
-      { id: "5B", title: "CRM → Call Trigger Webhook", week: 9, span: 0.5, diff: "Medium", deliverable: "Adding a CRM record automatically starts a call", desc: "FastAPI webhook endpoint. CRM posts new lead → your server pulls data → initiates call via Telnyx. Zero manual steps between lead added and call placed." },
-      { id: "5C", title: "Calendly API Integration", week: 9, span: 0.8, diff: "Medium", deliverable: "Full booking flow tested. Appointment appears in Calendly.", desc: "Owner says yes → agent reads your available slots from Calendly API → offers 2 options → books the one they pick → sends confirmation. Fully hands-free." },
-      { id: "5D", title: "Post-Call CRM Update", week: 10, span: 0.4, diff: "Easy", deliverable: "Zero manual CRM updates needed after any call", desc: "After every call: write outcome, transcript summary, next action, appointment details back to CRM automatically. No manual data entry. Ever." },
-      { id: "5E", title: "SMS Reminder System", week: 10, span: 0.4, diff: "Easy", deliverable: "Automated SMS fires correctly 24hrs before test appointments", desc: "24 hours before appointment: SMS to owner confirming name, time, your number. Twilio free trial. This one feature alone cuts no-show rate significantly." },
-      { id: "5F", title: "End-to-End Integration Test", week: 10, span: 0.8, diff: "Medium", deliverable: "10/10 runs complete without manual intervention", desc: "Full flow 10 times: Add lead → call fires → conversation → book → CRM updates → SMS fires. Document every failure. Fix every single one before moving on." },
+      { id: "5A", title: "Set up PropStream or BatchLeads trial", diff: "Easy", time: "1–2 hrs", deliverable: "500 FSBO/expired listing leads ready to call in your system" },
+      { id: "5B", title: "Set up GoHighLevel free trial", diff: "Easy", time: "2–3 hrs", deliverable: "CRM pipeline configured with stages: New → Called → Interested → Booked → Closed" },
+      { id: "5C", title: "Run first 100-call campaign", diff: "Medium", time: "1–2 days setup", deliverable: "100 calls made, outcomes logged, at least 1–3 real appointments booked" },
+      { id: "5D", title: "Analyse results and refine script", diff: "Hard", time: "ongoing", deliverable: "Script v2 based on real call data — conversion rate improving" },
     ]
   },
   {
-    id: 6, label: "P6", title: "Edge Cases, Defects & Readiness", weeks: [11, 12],
-    color: C.pink, dim: C.pinkDim, pct: 45,
+    id: 6, label: "W7–8", title: "First Client + Service Launch", weeks: [7, 8], color: C.pink, pct: 70,
     tasks: [
-      { id: "6A", title: "Stress Test: 50 Self-Calls", week: 11, span: 0.8, diff: "Medium", deliverable: "Bug tracker with 50 logged calls and all defects documented", desc: "Call yourself 50 times over 3 days. Different times of day. Different noise levels. Try to break it every way you can think of. Log every defect — GitHub Issues or Notion." },
-      { id: "6B", title: "Friend Test: 20 Blind Calls", week: 11, span: 0.8, diff: "Medium", deliverable: "20 friend test calls with full transcript analysis", desc: "3–4 friends answer without coaching. They act completely natural. Watch where the agent breaks on real unexpected human behavior. This will reveal bugs self-testing never could." },
-      { id: "6C", title: "Defect Priority & Fix Cycle", week: 11, span: 0.5, diff: "Medium", deliverable: "Zero P0 bugs. Top 5 P1s resolved.", desc: "Sort all bugs: P0 (call crashes), P1 (bad experience), P2 (minor). Fix all P0s immediately. Fix top 5 P1s. P2s go to backlog. Retest every single fix." },
-      { id: "6D", title: "Failure Mode Documentation", week: 12, span: 0.4, diff: "Easy", deliverable: "Written failure mode doc — your honest system assessment", desc: "Document every known failure: what causes it, what agent does wrong, whether it's fixed or in backlog. This becomes your go/no-go checklist before real calls." },
-      { id: "6E", title: "Final Pipeline Verification", week: 12, span: 0.8, diff: "Medium", deliverable: "Pass/fail report against 4 key metrics", desc: "20 calls over 2 days. Targets: 85% complete without crash, 70% reach qualification stage, booking works 100% of interested cases, CRM updated on all calls." },
-      { id: "6F", title: "Production Readiness Sign-Off", week: 12, span: 0.4, diff: "Easy", deliverable: "All green = ready to spend real money on real homeowners", desc: "Signed checklist: pipeline stable, P0 bugs zero, CRM working, booking working, logging complete, 20+ edge cases handled, all failure modes documented and known." },
+      { id: "6A", title: "Build client-facing dashboard (basic)", diff: "Medium", time: "1 week", deliverable: "Client can see: calls made, leads found, appointments booked — live" },
+      { id: "6B", title: "Create 1-page service offer", diff: "Easy", time: "1–2 hrs", deliverable: "Clear offer: X calls/month, Y qualified leads guaranteed, price" },
+      { id: "6C", title: "Onboard first client (use your existing result as proof)", diff: "Hard", time: "ongoing", deliverable: "First paying client at $500–1,500/month minimum" },
+      { id: "6D", title: "Document your SOP for client onboarding", diff: "Medium", time: "2–3 hrs", deliverable: "Written process to onboard any new agent in under 2 hours" },
     ]
   },
 ];
 
 const DIFF = { Easy: C.green, Medium: C.amber, Hard: C.red };
 
-const REMAINING = [
-  { label: "Error Handling & Reliability", pct: 8, fill: 4, diff: "Hard", note: "APIs fail mid-call — you need graceful fallbacks everywhere or calls die silently" },
-  { label: "Real Human Edge Cases", pct: 10, fill: 8, diff: "Hard", note: "Accents, spouse handoffs, angry owners — impossible to simulate with self-testing" },
-  { label: "Concurrent Call Management", pct: 7, fill: 3, diff: "Medium", note: "10–50 simultaneous calls with fully isolated state per call" },
-  { label: "Compliance Infrastructure", pct: 8, fill: 4, diff: "Hard", note: "TCPA, DNC scrubbing, recording consent — legally non-negotiable, can end business" },
-  { label: "Monitoring & Observability", pct: 4, fill: 2, diff: "Medium", note: "Know which call failed at which second and why — blind without this" },
-  { label: "Production Deployment", pct: 5, fill: 2, diff: "Medium", note: "VPS, uptime SLA, load testing, CI/CD pipeline" },
-  { label: "Prompt Iteration (Real Data)", pct: 13, fill: 8, diff: "Hard", note: "v1 → v23: only real homeowners teach you what's broken" },
+const STACK = [
+  { tool: "Vapi", role: "Voice AI engine", cost: "~$0.05–0.12/min", why: "Handles STT, LLM, TTS, telephony in one platform. Already production-ready.", color: C.cyan },
+  { tool: "Twilio", role: "Phone numbers & calls", cost: "~$0.013/min + $1/num", why: "Buy numbers, route calls. Vapi uses Twilio under the hood — direct gives you more control.", color: C.green },
+  { tool: "OpenAI GPT-4o-mini", role: "AI conversation brain", cost: "~$0.15/1M tokens", why: "Powers the actual conversation. Vapi plugs straight in — no integration work.", color: C.purple },
+  { tool: "n8n (self-hosted)", role: "Workflow automation", cost: "$0 self-hosted", why: "Connects Vapi webhooks to any CRM, email, Slack, calendar. Free if you host yourself.", color: C.amber },
+  { tool: "GoHighLevel", role: "CRM + client portal", cost: "$97/month", why: "Industry standard for agencies. White-label it — clients see your brand, not GHL.", color: C.orange },
+  { tool: "PropStream / BatchLeads", role: "Lead data", cost: "$100–150/month", why: "FSBO, expired listings, probate, absentee owners — the people most likely to sell.", color: C.pink },
 ];
 
-const EDGE_CASES = [
-  { case: "Owner hands phone to spouse mid-call", why: "Conversation context breaks completely" },
-  { case: "Heavy accent speaker", why: "STT accuracy drops 30–40% — LLM gets garbage" },
-  { case: "Same question asked 3 times", why: "Agent loops or gives inconsistent answers" },
-  { case: "Owner silent for 8+ seconds", why: "VAD triggers incorrectly, AI interrupts" },
-  { case: '"Yeah yeah" impatient response', why: "Agent ignores social cues, keeps pitching" },
-  { case: "Asks for specific home valuation", why: "Needs graceful deflection to appointment" },
-  { case: "Owner swears or gets aggressive", why: "Needs de-escalation logic, not more pitch" },
-  { case: "Heavy background noise (TV, kids)", why: "STT transcribes noise as real words" },
-  { case: "Very fast talker", why: "STT misses words, LLM receives broken input" },
-  { case: '"Is this a robot / AI?"', why: "Most critical moment — wrong answer = immediate hang-up" },
+const PRICING_TIERS = [
+  { plan: "Starter", calls: "3,000", leads: "5–10", price: "$1,500", margin: "$900–1,100", color: C.cyan },
+  { plan: "Growth", calls: "10,000", leads: "15–30", price: "$3,500", margin: "$2,500–2,900", color: C.green },
+  { plan: "Investor", calls: "30,000", leads: "40–80", price: "$7,000", margin: "$5,500–6,200", color: C.amber },
 ];
 
-const TABS = ["Overview", "Readiness", "Gantt", "Tasks", "Pipeline", "Costs"];
+const LEAD_SOURCES = [
+  { source: "FSBO Listings", heat: 9, why: "Already decided to sell, just haven't listed with agent yet", tool: "Zillow, PropStream" },
+  { source: "Expired MLS Listings", heat: 10, why: "Wanted to sell but failed — highly motivated, frustrated, receptive", tool: "PropStream, BatchLeads" },
+  { source: "Probate Lists", heat: 8, why: "Estate sales — heirs often want fast sale, emotional situation", tool: "County records, BatchLeads" },
+  { source: "Pre-Foreclosures", heat: 9, why: "Under financial pressure — urgency to sell before bank takes", tool: "PropStream, ATTOM" },
+  { source: "Tax Delinquent", heat: 7, why: "Can't pay taxes = cash-strapped, may consider selling", tool: "County tax records" },
+  { source: "Absentee Owners", heat: 7, why: "Don't live in property — less attachment, easier to sell", tool: "BatchLeads, PropStream" },
+];
+
+const SCRIPT = [
+  { role: "AI", line: "Hi, is this [Owner Name]? This is Sarah calling about your property at [Address]." },
+  { role: "Owner", line: "Yes, who's this?" },
+  { role: "AI", line: "I help connect homeowners in the area with buyers. I noticed your property and wanted to see — if the price made sense, would you ever consider selling?" },
+  { role: "Owner", line: "Maybe, depends on the offer." },
+  { role: "AI", line: "Completely understand. What would need to happen for it to make sense for you? Are you thinking sometime this year or more long-term?" },
+  { role: "Owner", line: "Probably within the next few months if the price is right." },
+  { role: "AI", line: "Perfect — that's actually exactly the kind of timing that works well. I'd love to connect you with our agent who can put together a real number for your home. Would Tuesday or Thursday work better for a quick 10-minute call?" },
+];
+
+const REVENUE_SCENARIOS = [
+  { clients: 2, avg: 2000, rev: 4000, cost: 800, profit: 3200, label: "Starting Out" },
+  { clients: 4, avg: 2500, rev: 10000, cost: 1500, profit: 8500, label: "Gaining Traction" },
+  { clients: 6, avg: 3000, rev: 18000, cost: 2500, profit: 15500, label: "Scaled" },
+  { clients: 8, avg: 3500, rev: 28000, cost: 4000, profit: 24000, label: "Full Agency" },
+];
 
 function AnimatedBar({ pct, color, height = 8 }) {
   const [w, setW] = useState(0);
   useEffect(() => { const t = setTimeout(() => setW(pct), 400); return () => clearTimeout(t); }, [pct]);
   return (
     <div style={{ height, background: C.border, borderRadius: 99, overflow: "hidden" }}>
-      <div style={{
-        height: "100%", width: `${w}%`, borderRadius: 99,
-        background: `linear-gradient(90deg, ${color}99, ${color})`,
-        transition: "width 1.4s cubic-bezier(0.4,0,0.2,1)",
-        boxShadow: `0 0 8px ${color}60`,
-      }} />
+      <div style={{ height: "100%", width: `${w}%`, borderRadius: 99, background: `linear-gradient(90deg, ${color}88, ${color})`, transition: "width 1.4s cubic-bezier(0.4,0,0.2,1)", boxShadow: `0 0 8px ${color}50` }} />
     </div>
   );
 }
 
-function BlockBar({ fill, total = 10, color }) {
+function SectionHeader({ color, children }) {
   return (
-    <div style={{ display: "flex", gap: 3 }}>
-      {Array.from({ length: total }).map((_, i) => (
-        <div key={i} style={{
-          width: 16, height: 16, borderRadius: 3,
-          background: i < fill ? color : C.border,
-          boxShadow: i < fill ? `0 0 6px ${color}50` : "none",
-          transition: "all 0.2s",
-        }} />
-      ))}
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+      <div style={{ width: 4, height: 22, background: color, borderRadius: 2, boxShadow: `0 0 8px ${color}80` }} />
+      <div style={{ fontSize: 11, fontWeight: 700, color, letterSpacing: 2.5, textTransform: "uppercase" }}>{children}</div>
+    </div>
+  );
+}
+
+function Card({ children, color, style = {} }) {
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${color ? color + "25" : C.border}`, borderRadius: 12, padding: 24, ...style }}>
+      {children}
     </div>
   );
 }
 
 export default function App() {
   const [tab, setTab] = useState("Overview");
-  const [expandedPhase, setExpandedPhase] = useState(null);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [checks, setChecks] = useState({});
-  const toggleCheck = (i) => setChecks(c => ({ ...c, [i]: !c[i] }));
-  const checkedCount = Object.values(checks).filter(Boolean).length;
+  const [openLearn, setOpenLearn] = useState(null);
+  const [openTask, setOpenTask] = useState(null);
+  const [openPhase, setOpenPhase] = useState(null);
 
   return (
     <div style={{ background: C.bg, minHeight: "100vh", fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: C.text, fontSize: 13 }}>
@@ -177,839 +205,801 @@ export default function App() {
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: ${C.bg}; }
         ::-webkit-scrollbar-thumb { background: ${C.borderHigh}; border-radius: 99px; }
-        .hover-row:hover { background: ${C.surfaceHover} !important; }
-        .tab-btn { transition: all 0.2s ease !important; }
+        .hov:hover { background: ${C.surfaceHover} !important; }
+        .tab-btn { transition: all 0.18s ease !important; }
         .tab-btn:hover { background: ${C.surfaceHigh} !important; color: ${C.text} !important; }
-        .phase-bar:hover { opacity: 1 !important; }
-        .card:hover { border-color: ${C.borderHigh} !important; }
-        .stat-glow { animation: pulse 3s ease-in-out infinite; }
-        @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.8 } }
-        .tag { font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 99px; letter-spacing: 0.5px; }
+        .card-hover:hover { border-color: ${C.borderHigh} !important; transform: translateY(-1px); transition: all 0.18s; }
+        .tag { font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 99px; }
+        @keyframes glow { 0%,100%{opacity:1}50%{opacity:0.75} }
       `}</style>
 
-      {/* ── HEADER ── */}
-      <div style={{ background: `linear-gradient(180deg, #0A0C1E 0%, ${C.surface} 100%)`, borderBottom: `1px solid ${C.border}` }}>
+      {/* HEADER */}
+      <div style={{ background: `linear-gradient(180deg,#090B1E 0%,${C.surface} 100%)`, borderBottom: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: 1380, margin: "0 auto", padding: "28px 32px 0" }}>
-
-          {/* Top row */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 20, marginBottom: 28 }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <div style={{ width: 7, height: 7, borderRadius: "50%", background: C.green, boxShadow: `0 0 10px ${C.green}` }} />
                 <span style={{ fontSize: 11, fontWeight: 600, color: C.textMid, letterSpacing: 3, textTransform: "uppercase" }}>
-                  AI Voice Agent · Real Estate Lead Outreach
+                  AI Calling Service · Real Estate Lead Generation · Vapi Stack
                 </span>
               </div>
-              <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 38, fontWeight: 800, color: C.white, letterSpacing: -1.5, lineHeight: 1.05, marginBottom: 8 }}>
-                FROM ZERO TO <span style={{ color: C.amber, textShadow: `0 0 30px ${C.amber}80` }}>45%</span> PRODUCTION
+              <h1 style={{ fontFamily: "'Syne',sans-serif", fontSize: 36, fontWeight: 800, color: C.white, letterSpacing: -1.5, lineHeight: 1.05, marginBottom: 8 }}>
+                REVISED PLAN —{" "}
+                <span style={{ color: C.amber, textShadow: `0 0 28px ${C.amber}70` }}>BUILD WITH VAPI</span>
+                <span style={{ color: C.textMid }}>, SELL TO AGENTS</span>
               </h1>
-              <p style={{ fontSize: 13, color: C.textMid, fontWeight: 400, lineHeight: 1.5 }}>
-                12-Week Build Plan · Full Learning Phase · Local RTX 3060 Ti · Complete Pipeline Architecture
+              <p style={{ fontSize: 13, color: C.textMid, fontWeight: 400 }}>
+                8-Week Build · Vapi + n8n + Twilio · $5K–$20K/month Revenue Potential · No Custom Voice Engine
               </p>
             </div>
-
-            {/* Stats */}
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {[
-                { v: "12", l: "Weeks", c: C.cyan },
-                { v: "6", l: "Phases", c: C.purple },
-                { v: "30", l: "Tasks", c: C.green },
-                { v: "$0", l: "Phase Cost", c: C.amber },
-                { v: "45%", l: "Complete", c: C.green },
-                { v: "55%", l: "Remaining", c: C.red },
+                { v: "8", l: "Weeks", c: C.cyan },
+                { v: "Vapi", l: "Voice Engine", c: C.purple },
+                { v: "$300", l: "Start Cost", c: C.green },
+                { v: "10×", l: "Faster Build", c: C.amber },
+                { v: "$20K", l: "Max Monthly", c: C.green },
+                { v: "High", l: "Feasibility", c: C.cyan },
               ].map(s => (
-                <div key={s.l} style={{
-                  padding: "14px 18px", background: C.surfaceHigh,
-                  border: `1px solid ${C.border}`, borderRadius: 10,
-                  textAlign: "center", minWidth: 80,
-                }}>
-                  <div style={{
-                    fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 800,
-                    color: s.c, lineHeight: 1,
-                    textShadow: `0 0 20px ${s.c}80`,
-                  }} className="stat-glow">{s.v}</div>
-                  <div style={{ fontSize: 10, fontWeight: 600, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 5 }}>{s.l}</div>
+                <div key={s.l} style={{ padding: "12px 16px", background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 10, textAlign: "center", minWidth: 76 }}>
+                  <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 22, fontWeight: 800, color: s.c, lineHeight: 1, textShadow: `0 0 18px ${s.c}70`, animation: "glow 3s ease-in-out infinite" }}>{s.v}</div>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: C.textDim, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 5 }}>{s.l}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Tabs */}
-          <div style={{ display: "flex", gap: 2 }}>
+          {/* PLAN CHANGE NOTICE */}
+          <div style={{ marginBottom: 20, padding: "14px 18px", background: `${C.amber}0C`, border: `1px solid ${C.amber}30`, borderRadius: 10, display: "flex", gap: 14, alignItems: "flex-start" }}>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>🔄</span>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.amber, marginBottom: 4 }}>PLAN UPDATE — Significant Change From Previous Version</div>
+              <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.7 }}>
+                Previous plan: build your own voice engine (4–6 months, complex). <span style={{ color: C.red }}>Scrapped.</span>{" "}
+                New plan: use <span style={{ color: C.cyan, fontWeight: 600 }}>Vapi</span> as the voice infrastructure and sell AI calling as a service to real estate agents.
+                Build time drops from 4–6 months to <span style={{ color: C.green, fontWeight: 600 }}>6–8 weeks</span>.
+                Revenue model changes from "get my own listings" to <span style={{ color: C.green, fontWeight: 600 }}>recurring B2B revenue from multiple agents</span>.
+              </div>
+            </div>
+          </div>
+
+          {/* TABS */}
+          <div style={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
             {TABS.map(t => (
               <button key={t} className="tab-btn" onClick={() => setTab(t)} style={{
-                padding: "11px 24px", fontSize: 12, fontWeight: 600,
-                fontFamily: "'Inter', sans-serif",
-                background: tab === t ? C.surfaceHigh : "transparent",
+                padding: "11px 20px", fontSize: 12, fontWeight: 600,
+                fontFamily: "'Inter',sans-serif", background: tab === t ? C.surfaceHigh : "transparent",
                 border: "none", borderBottom: `2px solid ${tab === t ? C.amber : "transparent"}`,
-                color: tab === t ? C.amber : C.textMid,
-                cursor: "pointer", letterSpacing: 0.5,
-                borderRadius: "6px 6px 0 0",
-                textAlign: "center",
+                color: tab === t ? C.amber : C.textMid, cursor: "pointer",
+                letterSpacing: 0.3, borderRadius: "6px 6px 0 0", textAlign: "center",
               }}>{t}</button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ── CONTENT ── */}
+      {/* CONTENT */}
       <div style={{ maxWidth: 1380, margin: "0 auto", padding: "28px 32px" }}>
 
-        {/* ═══ OVERVIEW ═══ */}
+        {/* ══════════════════ OVERVIEW ══════════════════ */}
         {tab === "Overview" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-            {/* Learning Phase definition + 45/55 */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 16 }}>
-
-              {/* Left: Definition */}
-              <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.cyan, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 20 }}>
-                  What "Learning Phase" Means
-                </div>
-                {["Study the topics", "Build the full system locally", "Call your own number", "Test every edge case you can think of", "Find and fix defects"].map((step, i) => (
-                  <div key={i}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 0" }}>
-                      <div style={{
-                        width: 30, height: 30, borderRadius: "50%",
-                        background: C.cyanDim, border: `1.5px solid ${C.cyan}55`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 12, fontWeight: 700, color: C.cyan, flexShrink: 0,
-                      }}>{i + 1}</div>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>{step}</span>
-                    </div>
-                    {i < 4 && <div style={{ marginLeft: 15, width: 1, height: 10, background: C.border }} />}
-                  </div>
-                ))}
-                <div style={{ marginTop: 20, padding: "14px 16px", background: `${C.cyan}0D`, border: `1px solid ${C.cyan}30`, borderRadius: 8 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: C.cyan }}>=  LEARNING PHASE COMPLETE</div>
-                  <div style={{ fontSize: 12, color: C.textMid, marginTop: 4 }}>Not just studying. Not just building. All of it together.</div>
-                </div>
-              </div>
-
-              {/* Right: 45/55 visual */}
-              <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 20 }}>
-                  Where This Plan Gets You
-                </div>
-
-                <div style={{ marginBottom: 22 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: C.textMid }}>Learning Phase End Point</span>
-                    <span style={{ fontFamily: "'Syne', sans-serif", fontSize: 22, fontWeight: 800, color: C.green, textShadow: `0 0 16px ${C.green}60` }}>45%</span>
-                  </div>
-                  <AnimatedBar pct={45} color={C.green} height={10} />
-                  <div style={{ marginTop: 8, display: "flex", gap: 3 }}>
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <div key={i} style={{ flex: 1, height: 5, background: i < 9 ? C.green : C.border, borderRadius: 2, opacity: i < 9 ? 0.85 : 0.25, boxShadow: i < 9 ? `0 0 4px ${C.green}60` : "none" }} />
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: 24 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: C.textMid }}>Remaining to 100% Production</span>
-                    <span style={{ fontFamily: "'Syne', sans-serif", fontSize: 22, fontWeight: 800, color: C.red, textShadow: `0 0 16px ${C.red}60` }}>55%</span>
-                  </div>
-                  <AnimatedBar pct={55} color={C.red} height={10} />
-                </div>
-
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.textDim, letterSpacing: 2, textTransform: "uppercase", marginBottom: 14 }}>That 55% Breaks Down As:</div>
-                {REMAINING.map((r, i) => (
-                  <div key={i} style={{ marginBottom: 12 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <span style={{ fontSize: 12, fontWeight: 500, color: C.textMid }}>{r.label}</span>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span className="tag" style={{ background: `${DIFF[r.diff]}18`, color: DIFF[r.diff], border: `1px solid ${DIFF[r.diff]}30` }}>{r.diff}</span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: DIFF[r.diff], minWidth: 30, textAlign: "right" }}>{r.pct}%</span>
-                      </div>
-                    </div>
-                    <BlockBar fill={r.fill} color={DIFF[r.diff]} />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 55% nobody talks about */}
-            <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <div style={{ width: 4, height: 24, background: C.red, borderRadius: 2, boxShadow: `0 0 8px ${C.red}` }} />
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.red, letterSpacing: 2.5, textTransform: "uppercase" }}>
-                  The 55% Nobody Talks About — What Separates a Demo From Production
-                </div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
+            {/* Old vs New */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <Card color={C.red}>
+                <SectionHeader color={C.red}>Old Plan — Scrapped</SectionHeader>
                 {[
-                  { title: "Production Conversation Quality", pct: "~10%", color: C.red, items: ["Owner hands phone to spouse mid-call", "Heavy accent drops STT accuracy 30–40%", "Same question 3 times — agent loops", "8-second silence triggers VAD falsely", '"Yeah yeah" — agent ignores social cues', '"Is this a robot?" — most critical moment'] },
-                  { title: "Reliability & Error Handling", pct: "~8%", color: C.amber, items: ["Deepgram API goes down mid-call", "ElevenLabs 429 rate limit during live call", "Telnyx drops audio stream at second 45", "LLM takes 4 seconds on one response", "CRM webhook silently fails to fire", "Server OOM on call 47"] },
-                  { title: "Concurrent Call Management", pct: "~7%", color: C.purple, items: ["Each call needs fully isolated state", "Memory multiplies with each active call", "GPU/CPU contention between simultaneous calls", "One crashed call cannot kill others", "Logs cannot get calls mixed up"] },
-                  { title: "Compliance Infrastructure", pct: "~8%", color: C.orange, items: ["DNC list scrubbing before every call", "State-by-state calling hour restrictions", "Call recording consent disclosure", "Opt-out handling mid-conversation", "TCPA audit trail — legally required"] },
-                ].map(section => (
-                  <div key={section.title} style={{ background: C.surfaceHigh, border: `1px solid ${section.color}20`, borderLeft: `3px solid ${section.color}`, borderRadius: 8, padding: 16 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: section.color }}>{section.title}</span>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: section.color }}>{section.pct}</span>
-                    </div>
-                    {section.items.map(item => (
-                      <div key={item} style={{ display: "flex", gap: 8, padding: "4px 0", fontSize: 12, color: C.textMid, borderBottom: `1px solid ${C.border}40` }}>
-                        <span style={{ color: section.color, flexShrink: 0, fontWeight: 700 }}>›</span>{item}
-                      </div>
-                    ))}
+                  ["Build custom voice engine", "4–6 months dev time"],
+                  ["Custom STT/LLM/TTS pipeline", "Latency problems you own"],
+                  ["Use only for your own listings", "Single revenue stream"],
+                  ["$0 platform cost but massive time cost", "Real opportunity cost"],
+                  ["Solo real estate agent use case", "Low revenue ceiling"],
+                  ["No product to sell", "No business scalability"],
+                ].map(([a, b], i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 8, padding: "8px 0", borderBottom: `1px solid ${C.border}30`, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 12, color: C.textMid }}>✗ {a}</span>
+                    <span style={{ fontSize: 11, color: C.red }}>{b}</span>
                   </div>
                 ))}
-              </div>
+              </Card>
+
+              <Card color={C.green}>
+                <SectionHeader color={C.green}>New Plan — Vapi + Agency Model</SectionHeader>
+                {[
+                  ["Use Vapi (production-ready)", "First call in 1 day"],
+                  ["Vapi handles all audio infra", "Sub-second latency solved"],
+                  ["Sell service to multiple agents", "Recurring B2B revenue"],
+                  ["$300–500/month operating cost", "Low overhead, high margin"],
+                  ["B2B SaaS-style service", "Unlimited scaling"],
+                  ["AI calling product you own", "Sell to any niche"],
+                ].map(([a, b], i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 8, padding: "8px 0", borderBottom: `1px solid ${C.border}30`, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 12, color: C.textMid }}>✓ {a}</span>
+                    <span style={{ fontSize: 11, color: C.green }}>{b}</span>
+                  </div>
+                ))}
+              </Card>
             </div>
 
-            {/* Edge cases + % breakdown */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 16 }}>
-              <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                  <div style={{ width: 4, height: 20, background: C.amber, borderRadius: 2 }} />
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, letterSpacing: 2.5, textTransform: "uppercase" }}>Real Human Edge Cases</div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  {EDGE_CASES.map((e, i) => (
-                    <div key={i} style={{ display: "flex", gap: 10, padding: "10px 12px", background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 7 }}>
-                      <span style={{ color: C.red, fontWeight: 700, fontSize: 13, flexShrink: 0, marginTop: 1 }}>!</span>
-                      <div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{e.case}</div>
-                        <div style={{ fontSize: 11, color: C.textMid, marginTop: 2 }}>{e.why}</div>
-                      </div>
+            {/* The Business Model Visual */}
+            <Card>
+              <SectionHeader color={C.cyan}>The Business Model — What You're Actually Building</SectionHeader>
+              <div style={{ overflowX: "auto" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 0, minWidth: 860, marginBottom: 20 }}>
+                  {[
+                    { label: "Lead List", sub: "PropStream", icon: "📋", color: C.cyan },
+                    null,
+                    { label: "n8n Trigger", sub: "Automation", icon: "⚡", color: C.cyan },
+                    null,
+                    { label: "Vapi", sub: "Voice AI", icon: "🤖", color: C.purple },
+                    null,
+                    { label: "Phone Call", sub: "Twilio", icon: "📞", color: C.green },
+                    null,
+                    { label: "AI Qualifies", sub: "Seller", icon: "🎯", color: C.amber },
+                    null,
+                    { label: "Interested?", sub: "Yes/No", icon: "❓", color: C.orange },
+                    null,
+                    { label: "n8n Routes", sub: "CRM + Book", icon: "⚙️", color: C.pink },
+                    null,
+                    { label: "Agent Gets", sub: "Hot Lead", icon: "💰", color: C.green },
+                  ].map((node, i) => node === null ? (
+                    <div key={i} style={{ fontSize: 20, color: C.border, padding: "0 5px", flexShrink: 0 }}>→</div>
+                  ) : (
+                    <div key={i} style={{ padding: "12px 10px", textAlign: "center", flexShrink: 0, background: `${node.color}0D`, border: `1px solid ${node.color}30`, borderRadius: 10, minWidth: 78 }}>
+                      <div style={{ fontSize: 20, marginBottom: 4 }}>{node.icon}</div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: node.color }}>{node.label}</div>
+                      <div style={{ fontSize: 9, color: C.textDim, marginTop: 1 }}>{node.sub}</div>
                     </div>
                   ))}
                 </div>
-                <div style={{ marginTop: 12, padding: "10px 14px", background: `${C.red}0C`, border: `1px solid ${C.red}20`, borderRadius: 7, fontSize: 12, color: C.textMid }}>
-                  <span style={{ color: C.red, fontWeight: 700 }}>Takes 4–6 weeks of real call data to fix. </span>Impossible to find with self-testing alone.
-                </div>
               </div>
+              <div style={{ padding: "14px 18px", background: `${C.green}0A`, border: `1px solid ${C.green}25`, borderRadius: 8, fontSize: 13, color: C.textMid, lineHeight: 1.7 }}>
+                <span style={{ color: C.green, fontWeight: 700 }}>You don't sell "AI". You sell qualified seller leads. </span>
+                Agents pay $1,500–$7,000/month for a system that automatically identifies homeowners interested in selling. You run the infrastructure, they get the leads.
+              </div>
+            </Card>
 
-              {/* % table */}
-              <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                  <div style={{ width: 4, height: 20, background: C.cyan, borderRadius: 2 }} />
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.cyan, letterSpacing: 2.5, textTransform: "uppercase" }}>Honest % Breakdown After Learning Phase</div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {/* Timeline comparison */}
+            <Card>
+              <SectionHeader color={C.amber}>Timeline Comparison — Build From Scratch vs Vapi</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.red, marginBottom: 12 }}>Build From Scratch</div>
                   {[
-                    { comp: "Core Pipeline (STT→LLM→TTS)", done: 90, remain: 10 },
-                    { comp: "Telephony Integration", done: 75, remain: 25 },
-                    { comp: "Conversation Logic v1", done: 60, remain: 40 },
-                    { comp: "CRM Integration", done: 65, remain: 35 },
-                    { comp: "Error Handling", done: 10, remain: 90 },
-                    { comp: "Concurrent Calls", done: 0, remain: 100 },
-                    { comp: "Compliance System", done: 0, remain: 100 },
-                    { comp: "Monitoring / Logging", done: 10, remain: 90 },
-                    { comp: "Prompt Refinement", done: 20, remain: 80 },
-                    { comp: "Production Deployment", done: 20, remain: 80 },
-                  ].map((row, i) => {
-                    const dc = row.done > 60 ? C.green : row.done > 20 ? C.amber : C.red;
-                    const rc = row.remain > 70 ? C.red : row.remain > 30 ? C.amber : C.green;
-                    return (
-                      <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 110px 110px", gap: 8, alignItems: "center", padding: "8px 10px", background: i % 2 === 0 ? C.surfaceHigh : "transparent", borderRadius: 6 }}>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: C.text }}>{row.comp}</span>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <div style={{ flex: 1, height: 5, background: C.border, borderRadius: 99, overflow: "hidden" }}>
-                            <div style={{ height: "100%", width: `${row.done}%`, background: dc, borderRadius: 99 }} />
-                          </div>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: dc, minWidth: 28, textAlign: "right" }}>{row.done}%</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <div style={{ flex: 1, height: 5, background: C.border, borderRadius: 99, overflow: "hidden" }}>
-                            <div style={{ height: "100%", width: `${row.remain}%`, background: rc, borderRadius: 99 }} />
-                          </div>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: rc, minWidth: 28, textAlign: "right" }}>{row.remain}%</span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                    { task: "Basic demo working", time: "2–3 weeks" },
+                    { task: "Phone calls functional", time: "4–6 weeks" },
+                    { task: "Sub-second latency", time: "6–10 weeks" },
+                    { task: "Interruption handling", time: "8–14 weeks" },
+                    { task: "Production stable", time: "4–6 months" },
+                    { task: "First real call to homeowner", time: "Month 3–4" },
+                    { task: "First revenue", time: "Month 5–6 earliest" },
+                  ].map((r, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 12 }}>
+                      <span style={{ color: C.textMid }}>{r.task}</span>
+                      <span style={{ color: C.red, fontWeight: 600 }}>{r.time}</span>
+                    </div>
+                  ))}
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: C.textMid }}>Column: Done after learning → Remaining</span>
-                  <div style={{ display: "flex", gap: 12 }}>
-                    {[["Done", C.green], ["Left", C.red]].map(([l, c]) => (
-                      <div key={l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />
-                        <span style={{ fontSize: 10, color: C.textMid }}>{l}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 12 }}>Using Vapi</div>
+                  {[
+                    { task: "Basic demo working", time: "Day 1" },
+                    { task: "Phone calls functional", time: "Day 2–3" },
+                    { task: "Sub-second latency", time: "Already solved" },
+                    { task: "Interruption handling", time: "Already solved" },
+                    { task: "Production stable", time: "Week 3–4" },
+                    { task: "First real call to homeowner", time: "Week 3" },
+                    { task: "First revenue", time: "Week 7–8" },
+                  ].map((r, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 12 }}>
+                      <span style={{ color: C.textMid }}>{r.task}</span>
+                      <span style={{ color: C.green, fontWeight: 600 }}>{r.time}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            </Card>
+
+            {/* Tech stack */}
+            <Card>
+              <SectionHeader color={C.purple}>The Stack — What You Use and Why</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 10 }}>
+                {STACK.map(s => (
+                  <div key={s.tool} className="card-hover" style={{ padding: "14px 16px", background: C.surfaceHigh, border: `1px solid ${C.border}`, borderLeft: `3px solid ${s.color}`, borderRadius: 8 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: s.color }}>{s.tool}</span>
+                      <span style={{ fontSize: 10, fontWeight: 600, color: C.amber }}>{s.cost}</span>
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: C.textMid, marginBottom: 6 }}>{s.role}</div>
+                    <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.6 }}>{s.why}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
 
           </div>
         )}
 
-        {/* ═══ READINESS ═══ */}
-        {tab === "Readiness" && (
+        {/* ══════════════════ LEARNING PATH ══════════════════ */}
+        {tab === "Learning Path" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ padding: "14px 18px", background: `${C.cyan}0A`, border: `1px solid ${C.cyan}25`, borderRadius: 10, fontSize: 12, color: C.textMid, lineHeight: 1.7 }}>
+              <span style={{ color: C.cyan, fontWeight: 700 }}>Total learning time: ~20–28 hours. </span>
+              Do these in order — each one builds directly on the previous. By step 4 you'll have a working real estate agent. Steps 5–6 make it a scalable business.
+            </div>
+
+            {LEARNING.map((item, i) => {
+              const isOpen = openLearn === i;
+              return (
+                <div key={i} className="hov" onClick={() => setOpenLearn(isOpen ? null : i)} style={{
+                  background: isOpen ? C.surface : C.surfaceHigh,
+                  border: `1px solid ${isOpen ? item.color + "40" : C.border}`,
+                  borderLeft: `3px solid ${item.color}`,
+                  borderRadius: 10, overflow: "hidden", cursor: "pointer",
+                  transition: "all 0.18s",
+                  boxShadow: isOpen ? `0 4px 24px ${C.bg}80` : "none",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", flexWrap: "wrap", gap: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: `${item.color}18`, border: `2px solid ${item.color}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span style={{ fontSize: 16 }}>{item.icon}</span>
+                      </div>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                          <span style={{ fontSize: 10, fontWeight: 800, color: item.color, letterSpacing: 1.5 }}>STEP {item.step}</span>
+                          <span className="tag" style={{ background: `${DIFF[item.diff]}18`, color: DIFF[item.diff], border: `1px solid ${DIFF[item.diff]}30` }}>{item.diff}</span>
+                        </div>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: C.white }}>{item.title}</span>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: C.textDim }}>⏱ {item.time}</span>
+                      <span style={{ fontSize: 12, color: C.textDim, transition: "transform 0.2s", display: "inline-block", transform: isOpen ? "rotate(180deg)" : "none" }}>▾</span>
+                    </div>
+                  </div>
+
+                  {isOpen && (
+                    <div style={{ padding: "0 20px 20px", borderTop: `1px solid ${item.color}20` }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 16 }}>
+                        <div>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2, marginBottom: 10 }}>WHAT YOU LEARN</div>
+                          {item.what.map((w, j) => (
+                            <div key={j} style={{ display: "flex", gap: 8, padding: "5px 0", fontSize: 12, color: C.text, borderBottom: `1px solid ${C.border}25` }}>
+                              <span style={{ color: item.color, fontWeight: 700, flexShrink: 0 }}>→</span>{w}
+                            </div>
+                          ))}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2, marginBottom: 10 }}>WHY THIS STEP MATTERS</div>
+                          <p style={{ fontSize: 12, color: C.textMid, lineHeight: 1.75 }}>{item.why}</p>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
+                        <div style={{ flex: 1, padding: "10px 14px", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 8, minWidth: 200 }}>
+                          <span style={{ fontSize: 10, fontWeight: 800, color: item.color, letterSpacing: 1.5 }}>DELIVERABLE → </span>
+                          <span style={{ fontSize: 12, color: C.text }}>{item.deliverable}</span>
+                        </div>
+                        {item.url && (
+                          <div style={{ padding: "10px 14px", background: `${item.color}0A`, border: `1px solid ${item.color}25`, borderRadius: 8 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 1.5 }}>URL → </span>
+                            <span style={{ fontSize: 11, color: item.color }}>{item.url}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* After completing */}
+            <Card color={C.green} style={{ marginTop: 8 }}>
+              <SectionHeader color={C.green}>After Completing All 6 Steps — What You Can Build</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                {[
+                  { title: "AI Real Estate Cold-Caller", desc: "Automated outbound system that calls FSBOs, expired listings, and absentee owners — qualifies and books appointments", color: C.green },
+                  { title: "AI Appointment-Setter Agent", desc: "Agent focused solely on moving warm leads to booked calls — follows up, handles objections, schedules", color: C.cyan },
+                  { title: "AI Lead-Generation Service", desc: "Sellable service you offer to real estate agents and investors. They pay monthly, you run the system", color: C.amber },
+                ].map(item => (
+                  <div key={item.title} style={{ padding: 16, background: C.surfaceHigh, border: `1px solid ${item.color}25`, borderLeft: `3px solid ${item.color}`, borderRadius: 8 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: item.color, marginBottom: 8 }}>{item.title}</div>
+                    <div style={{ fontSize: 11, color: C.textMid, lineHeight: 1.7 }}>{item.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* ══════════════════ BUILD PLAN ══════════════════ */}
+        {tab === "Build Plan" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            <div style={{ padding: "14px 18px", background: `${C.purple}0A`, border: `1px solid ${C.purple}25`, borderRadius: 10, fontSize: 12, color: C.textMid, lineHeight: 1.7 }}>
+              <span style={{ color: C.purple, fontWeight: 700 }}>8-week build. </span>
+              Weeks 1–4 are the technical foundation using Vapi. Weeks 5–6 are lead sourcing and real campaign testing. Weeks 7–8 are getting the first paying client. Click phases to expand tasks.
+            </div>
+
+            {/* 8-week gantt */}
+            <Card>
+              <SectionHeader color={C.cyan}>8-Week Timeline Overview</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "200px repeat(8, 1fr)", gap: 0, marginBottom: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, padding: "0 12px", letterSpacing: 1.5 }}>PHASE</div>
+                {Array.from({ length: 8 }, (_, i) => (
+                  <div key={i} style={{ fontSize: 10, fontWeight: 700, color: C.textDim, textAlign: "center", letterSpacing: 1 }}>W{i + 1}</div>
+                ))}
+              </div>
+              {BUILD_PHASES.map(phase => {
+                const [ws, we] = phase.weeks;
+                return (
+                  <div key={phase.id} style={{ display: "grid", gridTemplateColumns: "200px repeat(8, 1fr)", alignItems: "center", marginBottom: 6 }}>
+                    <div style={{ padding: "8px 12px", display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: phase.color, letterSpacing: 1.5 }}>{phase.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: C.textMid }}>{phase.title}</span>
+                    </div>
+                    {Array.from({ length: 8 }, (_, i) => {
+                      const w = i + 1, inP = w >= ws && w <= we;
+                      return (
+                        <div key={i} style={{ height: 32, display: "flex", alignItems: "center", padding: "0 2px", borderLeft: `1px solid ${C.border}25` }}>
+                          {inP && (
+                            <div style={{ height: 22, width: "100%", background: `linear-gradient(90deg,${phase.color}55,${phase.color}CC)`, borderRadius: w === ws ? "6px 0 0 6px" : w === we ? "0 6px 6px 0" : 0, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 8px ${phase.color}20` }}>
+                              {w === ws && <span style={{ fontSize: 9, fontWeight: 800, color: "#000", paddingLeft: 6 }}>{phase.pct}%</span>}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </Card>
+
+            {/* Phase task cards */}
+            {BUILD_PHASES.map(phase => (
+              <div key={phase.id}>
+                <div className="hov" onClick={() => setOpenPhase(openPhase === phase.id ? null : phase.id)} style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "14px 18px", background: C.surfaceHigh,
+                  border: `1px solid ${openPhase === phase.id ? phase.color + "40" : C.border}`,
+                  borderLeft: `4px solid ${phase.color}`, borderRadius: 10,
+                  cursor: "pointer", marginBottom: openPhase === phase.id ? 8 : 0, transition: "all 0.18s",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: phase.color, letterSpacing: 2 }}>{phase.label}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{phase.title}</span>
+                    <span style={{ fontSize: 11, color: C.textDim }}>Weeks {phase.weeks[0]}–{phase.weeks[1]}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: phase.color, padding: "3px 10px", background: `${phase.color}12`, border: `1px solid ${phase.color}30`, borderRadius: 99 }}>~{phase.pct}% service complete</span>
+                    <span style={{ fontSize: 12, color: C.textDim, display: "inline-block", transform: openPhase === phase.id ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+                  </div>
+                </div>
+
+                {openPhase === phase.id && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 8 }}>
+                    {phase.tasks.map(task => {
+                      const isOpen = openTask === task.id;
+                      return (
+                        <div key={task.id} className="hov" onClick={() => setOpenTask(isOpen ? null : task.id)} style={{
+                          marginLeft: 20, background: isOpen ? C.surface : C.surfaceHigh,
+                          border: `1px solid ${isOpen ? phase.color + "35" : C.border}`,
+                          borderLeft: `3px solid ${isOpen ? phase.color : C.borderHigh}`,
+                          borderRadius: 8, overflow: "hidden", cursor: "pointer", transition: "all 0.15s",
+                        }}>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", flexWrap: "wrap", gap: 8 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: C.textDim, minWidth: 22 }}>{task.id}</span>
+                              <div style={{ width: 7, height: 7, borderRadius: "50%", background: DIFF[task.diff], flexShrink: 0, boxShadow: `0 0 6px ${DIFF[task.diff]}70` }} />
+                              <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{task.title}</span>
+                            </div>
+                            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                              <span className="tag" style={{ background: `${DIFF[task.diff]}18`, color: DIFF[task.diff], border: `1px solid ${DIFF[task.diff]}30` }}>{task.diff}</span>
+                              <span style={{ fontSize: 11, color: C.textDim }}>⏱ {task.time}</span>
+                              <span style={{ fontSize: 11, color: C.textDim, display: "inline-block", transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
+                            </div>
+                          </div>
+                          {isOpen && (
+                            <div style={{ padding: "0 16px 14px", borderTop: `1px solid ${phase.color}18` }}>
+                              <div style={{ marginTop: 12, padding: "10px 14px", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 7, fontSize: 12, color: C.text }}>
+                                <span style={{ fontSize: 10, fontWeight: 800, color: phase.color, letterSpacing: 1.5 }}>DELIVERABLE → </span>{task.deliverable}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ══════════════════ BUSINESS MODEL ══════════════════ */}
+        {tab === "Business Model" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-            {/* Hardware */}
-            <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                <div style={{ width: 4, height: 20, background: C.cyan, borderRadius: 2 }} />
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.cyan, letterSpacing: 2.5, textTransform: "uppercase" }}>RTX 3060 Ti (8GB VRAM) — Capability Assessment</div>
+            {/* Pricing tiers */}
+            <Card>
+              <SectionHeader color={C.amber}>Pricing Tiers — What You Sell to Agents</SectionHeader>
+              <div style={{ padding: "12px 16px", background: `${C.amber}0A`, border: `1px solid ${C.amber}25`, borderRadius: 8, marginBottom: 16, fontSize: 12, color: C.textMid }}>
+                <span style={{ color: C.amber, fontWeight: 700 }}>Key insight: </span>
+                You don't sell "AI calls". You sell qualified leads. Agents don't care about technology — they care about motivated sellers in their pipeline.
               </div>
-              <div style={{ padding: "12px 16px", background: `${C.amber}0C`, border: `1px solid ${C.amber}25`, borderRadius: 8, fontSize: 13, color: C.textMid, marginBottom: 16, lineHeight: 1.6 }}>
-                <span style={{ color: C.amber, fontWeight: 700 }}>Critical constraint: </span>
-                You cannot run STT + LLM simultaneously on 8GB VRAM. They compete directly for memory.
-                Solution: Whisper base on CPU for STT, Llama 3.1 8B quantized on GPU for LLM.
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+                {PRICING_TIERS.map(tier => (
+                  <div key={tier.plan} style={{ padding: 20, background: C.surfaceHigh, border: `1px solid ${tier.color}30`, borderRadius: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: tier.color, letterSpacing: 2.5, marginBottom: 8 }}>{tier.plan.toUpperCase()}</div>
+                    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 28, fontWeight: 800, color: tier.color, textShadow: `0 0 16px ${tier.color}50`, marginBottom: 4 }}>{tier.price}</div>
+                    <div style={{ fontSize: 11, color: C.textMid, marginBottom: 16 }}>/month per client</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                      {[
+                        { l: "Calls/month", v: tier.calls },
+                        { l: "Qualified leads est.", v: tier.leads },
+                        { l: "Your margin", v: tier.margin },
+                      ].map(r => (
+                        <div key={r.l} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "5px 0", borderBottom: `1px solid ${C.border}30` }}>
+                          <span style={{ color: C.textMid }}>{r.l}</span>
+                          <span style={{ color: tier.color, fontWeight: 700 }}>{r.v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
+              <div style={{ marginTop: 14, padding: "12px 16px", background: `${C.cyan}0A`, border: `1px solid ${C.cyan}25`, borderRadius: 8, fontSize: 12, color: C.textMid }}>
+                <span style={{ color: C.cyan, fontWeight: 700 }}>Per-lead pricing alternative: </span>
+                Some agencies charge $100–$300 per qualified lead instead of monthly flat fee. Higher upside per deal, but harder to predict revenue. Start with flat fee.
+              </div>
+            </Card>
+
+            {/* Lead sources */}
+            <Card>
+              <SectionHeader color={C.green}>Lead Sources — Who to Call and Why</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 10 }}>
+                {LEAD_SOURCES.map(src => (
+                  <div key={src.source} style={{ padding: "14px 16px", background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 8 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{src.source}</span>
+                      <div style={{ display: "flex", gap: 2 }}>
+                        {Array.from({ length: 10 }).map((_, i) => (
+                          <div key={i} style={{ width: 8, height: 8, borderRadius: 2, background: i < src.heat ? C.amber : C.border }} />
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 11, color: C.textMid, marginBottom: 6 }}>{src.why}</div>
+                    <div style={{ fontSize: 10, color: C.textDim }}>Tool: {src.tool}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Script */}
+            <Card>
+              <SectionHeader color={C.purple}>Example AI Seller Script — What the Conversation Sounds Like</SectionHeader>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {SCRIPT.map((line, i) => (
+                  <div key={i} style={{ display: "flex", gap: 12, padding: "12px 16px", background: line.role === "AI" ? `${C.cyan}08` : C.surfaceHigh, border: `1px solid ${line.role === "AI" ? C.cyan + "25" : C.border}`, borderRadius: 8, alignItems: "flex-start" }}>
+                    <span style={{ fontSize: 10, fontWeight: 800, color: line.role === "AI" ? C.cyan : C.amber, letterSpacing: 1.5, flexShrink: 0, marginTop: 1, minWidth: 40 }}>{line.role}</span>
+                    <span style={{ fontSize: 12, color: line.role === "AI" ? C.text : C.textMid, lineHeight: 1.6, fontStyle: line.role === "Owner" ? "italic" : "normal" }}>{line.line}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 12, padding: "12px 16px", background: `${C.purple}0A`, border: `1px solid ${C.purple}25`, borderRadius: 8, fontSize: 12, color: C.textMid }}>
+                <span style={{ color: C.purple, fontWeight: 700 }}>Critical: </span>
+                The script never asks "are you interested in selling?" It asks permission-based questions that feel natural. "If the price made sense..." is much less aggressive than "I want to buy your house".
+              </div>
+            </Card>
+
+            {/* Why agents pay */}
+            <Card>
+              <SectionHeader color={C.orange}>Why Agents Pay — The Economics From Their Side</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.red, marginBottom: 12 }}>Human Cold Caller Cost</div>
+                  {[
+                    { item: "Salary/contractor fee", cost: "$2,000–4,000/mo" },
+                    { item: "Calls per day (realistic)", cost: "80–120 calls" },
+                    { item: "Answer rate", cost: "15–25%" },
+                    { item: "Leads per month", cost: "5–15" },
+                    { item: "Cost per lead", cost: "$130–800" },
+                    { item: "Works 8 hrs/day", cost: "40 hrs/week max" },
+                  ].map((r, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 12 }}>
+                      <span style={{ color: C.textMid }}>{r.item}</span>
+                      <span style={{ color: C.red, fontWeight: 600 }}>{r.cost}</span>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 12 }}>Your AI System</div>
+                  {[
+                    { item: "Monthly service fee", cost: "$1,500–7,000/mo" },
+                    { item: "Calls per day", cost: "500–2,000+" },
+                    { item: "Answer rate", cost: "20–35%" },
+                    { item: "Leads per month", cost: "15–80" },
+                    { item: "Cost per lead", cost: "$25–150" },
+                    { item: "Works 24/7", cost: "Unlimited hours" },
+                  ].map((r, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 12 }}>
+                      <span style={{ color: C.textMid }}>{r.item}</span>
+                      <span style={{ color: C.green, fontWeight: 600 }}>{r.cost}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginTop: 14, padding: "12px 16px", background: `${C.green}0A`, border: `1px solid ${C.green}25`, borderRadius: 8, fontSize: 12, color: C.textMid }}>
+                <span style={{ color: C.green, fontWeight: 700 }}>The agent's ROI: </span>
+                They pay you $3,500/month. If your system finds 1 listing at a $10K commission, they made $6,500 profit. Every additional lead is pure upside. That's why they renew.
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* ══════════════════ COSTS & ROI ══════════════════ */}
+        {tab === "Costs & ROI" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+            {/* Operating cost breakdown */}
+            <Card>
+              <SectionHeader color={C.amber}>Monthly Operating Costs — What It Costs You to Run</SectionHeader>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${C.border}` }}>
-                    {["Component", "Local Option", "Fits 8GB?", "Note", "Quality"].map(h => (
+                    {["Service", "Role", "Cost/month", "Notes"].map(h => (
                       <th key={h} style={{ padding: "8px 14px", fontSize: 10, fontWeight: 700, color: C.textDim, textAlign: "left", letterSpacing: 1.5, textTransform: "uppercase" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { comp: "STT", local: "Whisper medium", fits: "yes", note: "~3GB VRAM", quality: "Good", qc: C.green },
-                    { comp: "LLM", local: "Llama 3.1 8B (quantized)", fits: "yes", note: "~5GB VRAM", quality: "Decent", qc: C.amber },
-                    { comp: "TTS", local: "Coqui TTS / Piper", fits: "cpu", note: "CPU only", quality: "Mediocre", qc: C.orange },
-                    { comp: "Telephony", local: "Cannot run locally", fits: "no", note: "—", quality: "N/A", qc: C.textDim },
+                    { s: "Vapi", r: "Voice AI platform", c: "$50–200", note: "Scales with call volume. ~$0.07/min avg", col: C.cyan },
+                    { s: "Twilio", r: "Phone calls + SMS", c: "$80–150", note: "$0.013/min outbound + numbers", col: C.green },
+                    { s: "OpenAI (GPT-4o-mini)", r: "LLM for conversations", c: "$20–60", note: "Very cheap per call. Upgradeable.", col: C.purple },
+                    { s: "n8n (self-hosted)", r: "Workflow automation", c: "$5–20", note: "VPS hosting only. n8n itself is free.", col: C.amber },
+                    { s: "GoHighLevel", r: "CRM + white-label portal", c: "$97", note: "White-label so clients see your brand", col: C.orange },
+                    { s: "PropStream / BatchLeads", r: "Lead data", c: "$100–150", note: "Can charge clients separately for this", col: C.pink },
+                    { s: "VPS Server", r: "n8n hosting", c: "$20–40", note: "Hetzner or DigitalOcean. Small server fine.", col: C.textMid },
+                    { s: "DNC Compliance", r: "Legal scrubbing", c: "$25–50", note: "Non-negotiable. Every list must be scrubbed.", col: C.red },
                   ].map((row, i) => (
-                    <tr key={i} style={{ borderBottom: `1px solid ${C.border}30`, background: i % 2 === 0 ? C.surfaceHigh : "transparent" }}>
-                      <td style={{ padding: "13px 14px", fontSize: 13, fontWeight: 700, color: C.amber }}>{row.comp}</td>
-                      <td style={{ padding: "13px 14px", fontSize: 12, color: C.text }}>{row.local}</td>
-                      <td style={{ padding: "13px 14px" }}>
-                        {row.fits === "yes" && <span className="tag" style={{ background: C.greenGlow, color: C.green, border: `1px solid ${C.green}30` }}>✓ Yes</span>}
-                        {row.fits === "cpu" && <span className="tag" style={{ background: C.amberGlow, color: C.amber, border: `1px solid ${C.amber}30` }}>⚠ CPU</span>}
-                        {row.fits === "no" && <span className="tag" style={{ background: C.redGlow, color: C.red, border: `1px solid ${C.red}30` }}>✗ No</span>}
-                      </td>
-                      <td style={{ padding: "13px 14px", fontSize: 12, color: C.textMid }}>{row.note}</td>
-                      <td style={{ padding: "13px 14px", fontSize: 12, fontWeight: 600, color: row.qc }}>{row.quality}</td>
+                    <tr key={i} style={{ borderBottom: `1px solid ${C.border}25`, background: i % 2 === 0 ? C.surfaceHigh : "transparent" }}>
+                      <td style={{ padding: "12px 14px", fontSize: 13, fontWeight: 700, color: row.col }}>{row.s}</td>
+                      <td style={{ padding: "12px 14px", fontSize: 12, color: C.textMid }}>{row.r}</td>
+                      <td style={{ padding: "12px 14px", fontSize: 13, fontWeight: 700, color: C.amber }}>{row.c}</td>
+                      <td style={{ padding: "12px 14px", fontSize: 11, color: C.textDim }}>{row.note}</td>
                     </tr>
                   ))}
+                  <tr style={{ background: C.surfaceHigh, borderTop: `1px solid ${C.border}` }}>
+                    <td colSpan={2} style={{ padding: "14px 14px", fontSize: 13, fontWeight: 700, color: C.text }}>TOTAL OPERATING COST</td>
+                    <td style={{ padding: "14px 14px", fontFamily: "'Syne',sans-serif", fontSize: 18, fontWeight: 800, color: C.amber, textShadow: `0 0 14px ${C.amber}50` }}>$397–767/mo</td>
+                    <td style={{ padding: "14px 14px", fontSize: 11, color: C.textDim }}>Before any client revenue</td>
+                  </tr>
                 </tbody>
               </table>
-            </div>
+            </Card>
 
-            {/* Free vs Paid */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div className="card" style={{ background: C.surface, border: `1px solid ${C.green}25`, borderRadius: 12, padding: 24 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.green, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 16 }}>✓ Works Completely Free</div>
-                {["Conversation logic and prompts", "Orchestration / state management code", "CRM integration (mock data)", "Calendar booking logic", "Call flow and branching logic", "Voicemail detection logic", "Retry & scheduling system", "Monitoring dashboard build", "Testing with pre-recorded audio files", "End-to-end pipeline (just slow)"].map(item => (
-                  <div key={item} style={{ display: "flex", gap: 10, padding: "7px 0", fontSize: 12, color: C.textMid, borderBottom: `1px solid ${C.border}30` }}>
-                    <span style={{ color: C.green, fontWeight: 700, flexShrink: 0 }}>✓</span>{item}
+            {/* Revenue scenarios */}
+            <Card>
+              <SectionHeader color={C.green}>Revenue Scenarios — From First Client to Full Agency</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+                {REVENUE_SCENARIOS.map(sc => (
+                  <div key={sc.label} style={{ padding: 18, background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 10, textAlign: "center" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2, marginBottom: 10 }}>{sc.label.toUpperCase()}</div>
+                    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 10, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>REVENUE</div>
+                    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 22, fontWeight: 800, color: C.amber, textShadow: `0 0 14px ${C.amber}50` }}>${sc.rev.toLocaleString()}</div>
+                    <div style={{ height: 1, background: C.border, margin: "10px 0" }} />
+                    <div style={{ fontSize: 11, color: C.textMid, marginBottom: 4 }}>{sc.clients} clients @ ~${sc.avg.toLocaleString()}/mo</div>
+                    <div style={{ fontSize: 11, color: C.textDim, marginBottom: 8 }}>Costs: ~${sc.cost.toLocaleString()}/mo</div>
+                    <div style={{ padding: "6px 0", background: `${C.green}0A`, border: `1px solid ${C.green}25`, borderRadius: 6 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: C.green }}>PROFIT</div>
+                      <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 18, fontWeight: 800, color: C.green }}>${sc.profit.toLocaleString()}</div>
+                    </div>
                   </div>
                 ))}
               </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div className="card" style={{ background: C.surface, border: `1px solid ${C.red}25`, borderRadius: 12, padding: 24 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.red, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 14 }}>✗ Cannot Do For Free</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ padding: "14px 16px", background: `${C.cyan}0A`, border: `1px solid ${C.cyan}25`, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: C.cyan, marginBottom: 8 }}>First 90 Days: Realistic Target</div>
                   {[
-                    { item: "Call real phone numbers", note: "Telnyx/Twilio required — no workaround" },
-                    { item: "Sub-second latency pipeline", note: "Cloud APIs mandatory for production speed" },
-                    { item: "Production quality TTS voice", note: "ElevenLabs or Cartesia required" },
-                    { item: "DNC compliance scrubbing", note: "$25–50/mo — legally non-negotiable" },
-                  ].map(({ item, note }) => (
-                    <div key={item} style={{ padding: "8px 0", borderBottom: `1px solid ${C.border}30` }}>
-                      <div style={{ display: "flex", gap: 10, fontSize: 12, color: C.textMid }}>
-                        <span style={{ color: C.red, fontWeight: 700, flexShrink: 0 }}>✗</span>{item}
-                      </div>
-                      <div style={{ fontSize: 11, color: C.textDim, marginTop: 2, paddingLeft: 20 }}>{note}</div>
+                    ["Month 1", "Build system, test, refine script", "$0"],
+                    ["Month 2", "First client onboarded ($1,500–2,000/mo)", "$1,500–2,000"],
+                    ["Month 3", "2–3 clients + referrals starting", "$3,000–6,000"],
+                  ].map(([m, a, r], i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 11, flexWrap: "wrap", gap: 4 }}>
+                      <span style={{ color: C.cyan, fontWeight: 700, minWidth: 60 }}>{m}</span>
+                      <span style={{ color: C.textMid, flex: 1 }}>{a}</span>
+                      <span style={{ color: C.green, fontWeight: 700 }}>{r}</span>
                     </div>
                   ))}
                 </div>
-                <div className="card" style={{ background: C.surface, border: `1px solid ${C.amber}25`, borderRadius: 12, padding: 20 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 12 }}>Bridge: Free API Tiers (Week 5)</div>
-                  {["Twilio free trial → $15 credit, real calls", "Deepgram free tier → 200 hours free", "OpenAI → free credits on new account", "ElevenLabs free → 10k chars/month"].map(item => (
-                    <div key={item} style={{ fontSize: 12, color: C.textMid, padding: "4px 0" }}>→ {item}</div>
+                <div style={{ padding: "14px 16px", background: `${C.amber}0A`, border: `1px solid ${C.amber}25`, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, marginBottom: 8 }}>How To Get First 5 Clients</div>
+                  {["Use your own results as proof (run campaigns first for yourself)", "Cold outreach to local real estate agents on Instagram/LinkedIn", "Real estate investor Facebook groups — they WANT this service", "Offer first month at cost or free — results speak louder than pitch", "One happy client = 3 referrals in this industry"].map((item, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, padding: "5px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 11, color: C.textMid }}>
+                      <span style={{ color: C.amber, fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>{item}
+                    </div>
                   ))}
-                  <div style={{ marginTop: 10, fontSize: 12, fontWeight: 700, color: C.amber }}>Spend $0 but get real API quality for testing.</div>
                 </div>
               </div>
-            </div>
+            </Card>
 
-            {/* Readiness checklist */}
-            <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 4, height: 20, background: C.amber, borderRadius: 2 }} />
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, letterSpacing: 2.5, textTransform: "uppercase" }}>Are You Ready To Spend Money? — Click to check off</div>
+            {/* Startup cost */}
+            <Card color={C.cyan}>
+              <SectionHeader color={C.cyan}>Startup Cost — What You Need Before First Client</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div>
+                  {[
+                    { item: "Vapi account (first 1000 min free)", cost: "$0", note: "Free tier plenty for testing" },
+                    { item: "Twilio trial account", cost: "$0", note: "$15 free credit included" },
+                    { item: "n8n self-hosted (Hetzner VPS)", cost: "$20", note: "One-time monthly start" },
+                    { item: "GoHighLevel 14-day trial", cost: "$0", note: "Then $97/mo — bill after first client" },
+                    { item: "PropStream trial", cost: "$1", note: "7-day trial for $1" },
+                    { item: "Domain + email", cost: "$15", note: "Professional presence before pitching" },
+                    { item: "TCPA legal review", cost: "$200–500", note: "Do NOT skip this. Seriously." },
+                  ].map((r, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${C.border}25`, gap: 10 }}>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 500, color: C.text }}>{r.item}</div>
+                        <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>{r.note}</div>
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: C.amber, flexShrink: 0 }}>{r.cost}</span>
+                    </div>
+                  ))}
                 </div>
-                <div style={{
-                  padding: "6px 16px", borderRadius: 99,
-                  background: checkedCount === 6 ? C.greenGlow : checkedCount >= 4 ? C.amberGlow : C.redGlow,
-                  border: `1px solid ${checkedCount === 6 ? C.green : checkedCount >= 4 ? C.amber : C.red}40`,
-                  fontSize: 12, fontWeight: 700,
-                  color: checkedCount === 6 ? C.green : checkedCount >= 4 ? C.amber : C.red,
-                }}>
-                  {checkedCount}/6 · {checkedCount === 6 ? "READY TO SPEND" : checkedCount >= 4 ? "GETTING CLOSE" : "NOT YET"}
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div style={{ padding: "18px 20px", background: C.surfaceHigh, border: `1px solid ${C.green}30`, borderRadius: 10, textAlign: "center" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: C.textDim, letterSpacing: 2, marginBottom: 6 }}>TOTAL TO GET STARTED</div>
+                    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 32, fontWeight: 800, color: C.green, textShadow: `0 0 20px ${C.green}60` }}>$236–536</div>
+                    <div style={{ fontSize: 11, color: C.textMid, marginTop: 4 }}>Before first client pays you</div>
+                  </div>
+                  <div style={{ padding: "16px 18px", background: `${C.amber}0A`, border: `1px solid ${C.amber}25`, borderRadius: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, marginBottom: 10 }}>Break-Even Math</div>
+                    {[
+                      ["Monthly operating cost", "$400–770"],
+                      ["Minimum 1 client needed", "$1,500+/mo"],
+                      ["Break-even at", "1 client"],
+                      ["Profitable from", "Month 2"],
+                    ].map(([l, v], i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "5px 0", borderBottom: `1px solid ${C.border}25` }}>
+                        <span style={{ color: C.textMid }}>{l}</span>
+                        <span style={{ color: C.amber, fontWeight: 700 }}>{v}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            </Card>
+          </div>
+        )}
+
+        {/* ══════════════════ FEASIBILITY ══════════════════ */}
+        {tab === "Feasibility" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+            {/* Overall score */}
+            <Card color={C.green}>
+              <SectionHeader color={C.green}>Overall Feasibility Assessment</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 20 }}>
                 {[
-                  { q: "Can you write a basic webhook handler?", y: "Getting close", n: "Not yet" },
-                  { q: "Have you run any LLM API call in code?", y: "Getting close", n: "Not yet" },
-                  { q: "Do you understand async/await deeply?", y: "Getting close", n: "Not yet" },
-                  { q: "Have you read LiveKit or Pipecat docs?", y: "Getting close", n: "Not yet" },
-                  { q: "Have you written your conversation script?", y: "Ready", n: "Not yet" },
-                  { q: "Can you explain VAD in your own words?", y: "Ready", n: "Not yet" },
+                  { label: "Technical Difficulty", score: 4, max: 10, color: C.green, verdict: "Very Manageable", note: "Vapi eliminates the hardest parts" },
+                  { label: "Business Difficulty", score: 6, max: 10, color: C.amber, verdict: "Moderate", note: "Sales takes time but niche is proven" },
+                  { label: "Time to First Revenue", score: 8, max: 10, color: C.green, verdict: "7–8 weeks", note: "Fastest path to cash in this space" },
+                  { label: "Revenue Ceiling", score: 9, max: 10, color: C.green, verdict: "Very High", note: "$20K+/mo with 6–8 clients" },
+                  { label: "Competition Level", score: 6, max: 10, color: C.amber, verdict: "Moderate", note: "Competitive but local niches wide open" },
+                  { label: "Survival Probability (12mo)", score: 7, max: 10, color: C.green, verdict: "High", note: "If you get 3 clients, you survive" },
+                ].map(s => (
+                  <div key={s.label} style={{ padding: 16, background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: C.textMid, marginBottom: 8 }}>{s.label}</div>
+                    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 24, fontWeight: 800, color: s.color, textShadow: `0 0 14px ${s.color}50`, marginBottom: 4 }}>{s.score}/10</div>
+                    <AnimatedBar pct={s.score * 10} color={s.color} height={5} />
+                    <div style={{ fontSize: 12, fontWeight: 700, color: s.color, marginTop: 8 }}>{s.verdict}</div>
+                    <div style={{ fontSize: 10, color: C.textDim, marginTop: 3 }}>{s.note}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ padding: "14px 18px", background: `${C.green}0A`, border: `1px solid ${C.green}25`, borderRadius: 8, fontSize: 13, color: C.textMid, lineHeight: 1.7 }}>
+                <span style={{ color: C.green, fontWeight: 700 }}>Verdict: Highly feasible for 2 CS people. </span>
+                The business model is proven — hundreds of agencies are doing this right now. Your CS background means the technical setup (Vapi, n8n, API integration) takes you days, not weeks. The hardest part is getting the first client — not the tech.
+              </div>
+            </Card>
+
+            {/* Risks */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <Card color={C.red}>
+                <SectionHeader color={C.red}>Real Risks — Don't Ignore These</SectionHeader>
+                {[
+                  { risk: "TCPA Legal Exposure", sev: "Critical", desc: "Wrong setup = $500–1,500 per illegal call. At 1,000 calls/day that's catastrophic. Get a lawyer first." },
+                  { risk: "Script Quality", sev: "High", desc: "Bad script = 0% conversion. The agent prompt is 70% of your results. Iterate relentlessly." },
+                  { risk: "Lead Quality Matters", sev: "High", desc: "Calling random homeowners won't work. Expired listings and FSBOs convert 3–5x better than cold lists." },
+                  { risk: "Client Churn", sev: "Medium", desc: "If you promise 10 leads and deliver 2, they cancel. Under-promise, over-deliver on your first client." },
+                  { risk: "Vapi Platform Dependency", sev: "Medium", desc: "If Vapi raises prices or breaks, you're affected. Keep your conversation logic exportable." },
+                  { risk: "Market Saturation (some cities)", sev: "Medium", desc: "Major metros have existing AI caller services. Target mid-size markets first." },
                 ].map((r, i) => (
-                  <div key={i} className="hover-row" onClick={() => toggleCheck(i)} style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "13px 16px", background: checks[i] ? `${C.green}0C` : C.surfaceHigh,
-                    border: `1px solid ${checks[i] ? C.green + "30" : C.border}`,
-                    borderRadius: 8, cursor: "pointer", transition: "all 0.15s", flexWrap: "wrap", gap: 8,
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{
-                        width: 20, height: 20, borderRadius: 5,
-                        border: `2px solid ${checks[i] ? C.green : C.borderHigh}`,
-                        background: checks[i] ? C.green : "transparent",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 11, color: "#000", fontWeight: 800, flexShrink: 0,
-                        boxShadow: checks[i] ? `0 0 10px ${C.green}50` : "none",
-                        transition: "all 0.2s",
-                      }}>{checks[i] ? "✓" : ""}</div>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: checks[i] ? C.text : C.textMid }}>{r.q}</span>
+                  <div key={i} style={{ padding: "10px 12px", background: C.surfaceHigh, border: `1px solid ${r.sev === "Critical" ? C.red + "40" : C.border}`, borderRadius: 7, marginBottom: 8 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: r.sev === "Critical" ? C.red : r.sev === "High" ? C.amber : C.textMid }}>{r.risk}</span>
+                      <span className="tag" style={{ background: r.sev === "Critical" ? C.redGlow : `${C.amber}18`, color: r.sev === "Critical" ? C.red : C.amber, border: `1px solid ${r.sev === "Critical" ? C.red : C.amber}30` }}>{r.sev}</span>
                     </div>
-                    <div style={{ display: "flex", gap: 16 }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: C.green }}>YES → {r.y}</span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: C.red }}>NO → {r.n}</span>
-                    </div>
+                    <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.6 }}>{r.desc}</div>
                   </div>
                 ))}
-              </div>
-              {checkedCount === 6 && (
-                <div style={{ marginTop: 14, padding: "14px 18px", background: `${C.green}0C`, border: `1px solid ${C.green}30`, borderRadius: 8, fontSize: 13, fontWeight: 700, color: C.green, textAlign: "center" }}>
-                  ✓ All 6 checked — You are ready to spend real money on real calls
-                </div>
-              )}
-            </div>
+              </Card>
 
-          </div>
-        )}
-
-        {/* ═══ GANTT ═══ */}
-        {tab === "Gantt" && (
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.textDim, letterSpacing: 2, textTransform: "uppercase", marginBottom: 16 }}>
-              Click phase to expand tasks · Click task to view detail
-            </div>
-
-            {/* Week header */}
-            <div style={{ display: "grid", gridTemplateColumns: "270px repeat(12, 1fr)", paddingBottom: 10, borderBottom: `1px solid ${C.border}`, marginBottom: 6 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, padding: "0 14px", letterSpacing: 1.5 }}>PHASE</div>
-              {Array.from({ length: 12 }, (_, i) => (
-                <div key={i} style={{ fontSize: 10, fontWeight: 700, color: C.textDim, textAlign: "center", letterSpacing: 1 }}>W{i + 1}</div>
-              ))}
-            </div>
-
-            {PHASES.map(phase => (
-              <div key={phase.id}>
-                {/* Phase row */}
-                <div
-                  className="hover-row"
-                  onClick={() => { setExpandedPhase(expandedPhase === phase.id ? null : phase.id); setSelectedTask(null); }}
-                  style={{
-                    display: "grid", gridTemplateColumns: "270px repeat(12, 1fr)",
-                    alignItems: "center", borderRadius: 8, padding: "3px 0", marginBottom: 4,
-                    background: expandedPhase === phase.id ? C.surfaceHigh : "transparent",
-                    cursor: "pointer", transition: "background 0.15s",
-                  }}
-                >
-                  <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 9, color: C.textDim }}>{expandedPhase === phase.id ? "▼" : "▶"}</span>
-                    <span style={{ fontSize: 11, fontWeight: 800, color: phase.color, letterSpacing: 1.5 }}>{phase.label}</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: C.textMid }}>{phase.title}</span>
-                  </div>
-                  {Array.from({ length: 12 }, (_, i) => {
-                    const w = i + 1, inPhase = w >= phase.weeks[0] && w <= phase.weeks[1];
-                    const isStart = w === phase.weeks[0], isEnd = w === phase.weeks[1];
-                    return (
-                      <div key={i} style={{ height: 36, display: "flex", alignItems: "center", padding: "0 1px", borderLeft: `1px solid ${C.border}25` }}>
-                        {inPhase && (
-                          <div style={{
-                            height: 26, width: "100%",
-                            background: `linear-gradient(90deg, ${phase.dim}, ${phase.color}CC)`,
-                            borderRadius: `${isStart ? 6 : 0}px ${isEnd ? 6 : 0}px ${isEnd ? 6 : 0}px ${isStart ? 6 : 0}px`,
-                            display: "flex", alignItems: "center",
-                            boxShadow: `0 0 10px ${phase.color}25`,
-                          }}>
-                            {isStart && <span style={{ fontSize: 9, fontWeight: 800, color: "#000", paddingLeft: 8 }}>{phase.pct}%</span>}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Tasks */}
-                {expandedPhase === phase.id && phase.tasks.map(task => (
-                  <div key={task.id}>
-                    <div
-                      className="hover-row"
-                      onClick={() => setSelectedTask(selectedTask?.id === task.id ? null : task)}
-                      style={{
-                        display: "grid", gridTemplateColumns: "270px repeat(12, 1fr)",
-                        alignItems: "center", borderRadius: 6, padding: "2px 0", marginBottom: 2,
-                        background: selectedTask?.id === task.id ? C.surface : "transparent",
-                        cursor: "pointer", transition: "background 0.15s",
-                      }}
-                    >
-                      <div style={{ padding: "5px 14px 5px 32px", display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: DIFF[task.diff], flexShrink: 0, boxShadow: `0 0 6px ${DIFF[task.diff]}80` }} />
-                        <span style={{ fontSize: 11, fontWeight: 500, color: C.textMid }}>{task.title}</span>
-                      </div>
-                      {Array.from({ length: 12 }, (_, i) => (
-                        <div key={i} style={{ height: 24, display: "flex", alignItems: "center", padding: "0 1px", borderLeft: `1px solid ${C.border}15` }}>
-                          {i + 1 === task.week && (
-                            <div style={{ height: 10, width: `${task.span * 100}%`, background: phase.color, borderRadius: 3, opacity: 0.75, boxShadow: `0 0 6px ${phase.color}50` }} />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    {selectedTask?.id === task.id && (
-                      <div style={{
-                        margin: "4px 0 8px 32px", padding: "16px 18px",
-                        background: C.surface, border: `1px solid ${phase.color}30`,
-                        borderLeft: `3px solid ${phase.color}`, borderRadius: 8,
-                        boxShadow: `0 4px 20px ${C.bg}`,
-                      }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: phase.color }}>{task.title}</span>
-                          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                            <span className="tag" style={{ background: `${DIFF[task.diff]}18`, color: DIFF[task.diff], border: `1px solid ${DIFF[task.diff]}30` }}>{task.diff}</span>
-                            <span style={{ fontSize: 11, fontWeight: 500, color: C.textDim }}>Week {task.week}</span>
-                          </div>
-                        </div>
-                        <p style={{ fontSize: 12, color: C.textMid, lineHeight: 1.7, marginBottom: 12 }}>{task.desc}</p>
-                        <div style={{ padding: "10px 14px", background: C.bg, borderRadius: 6, fontSize: 12, color: C.text }}>
-                          <span style={{ color: C.textDim, fontWeight: 600 }}>DELIVERABLE → </span>{task.deliverable}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ))}
-
-            <div style={{ marginTop: 20, display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2 }}>DIFFICULTY:</span>
-              {Object.entries(DIFF).map(([k, v]) => (
-                <div key={k} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 9, height: 9, borderRadius: "50%", background: v, boxShadow: `0 0 6px ${v}80` }} />
-                  <span style={{ fontSize: 11, fontWeight: 500, color: C.textMid }}>{k}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ═══ TASKS ═══ */}
-        {tab === "Tasks" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: C.textDim, letterSpacing: 2.5, textTransform: "uppercase" }}>
-              All 30 Tasks — Full Detail · Click any task to expand
-            </div>
-            {PHASES.map(phase => (
-              <div key={phase.id}>
-                <div style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  paddingBottom: 12, marginBottom: 14,
-                  borderBottom: `1px solid ${phase.color}30`,
-                  flexWrap: "wrap", gap: 8,
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{
-                      padding: "4px 12px", background: `${phase.color}15`,
-                      border: `1px solid ${phase.color}40`, borderRadius: 6,
-                      fontSize: 11, fontWeight: 800, color: phase.color, letterSpacing: 2,
-                    }}>{phase.label}</div>
-                    <span style={{ fontSize: 16, fontWeight: 700, color: C.text }}>{phase.title}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: C.textDim }}>Weeks {phase.weeks[0]}–{phase.weeks[1]}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: phase.color, padding: "3px 12px", background: `${phase.color}12`, border: `1px solid ${phase.color}30`, borderRadius: 99 }}>~{phase.pct}% of total product</span>
-                  </div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {phase.tasks.map((task) => {
-                    const isOpen = selectedTask?.id === task.id;
-                    return (
-                      <div key={task.id} className="hover-row" onClick={() => setSelectedTask(isOpen ? null : { ...task, phase })} style={{
-                        background: isOpen ? C.surface : C.surfaceHigh,
-                        border: `1px solid ${isOpen ? phase.color + "40" : C.border}`,
-                        borderLeft: `3px solid ${isOpen ? phase.color : C.borderHigh}`,
-                        borderRadius: 10, overflow: "hidden", cursor: "pointer",
-                        transition: "all 0.18s",
-                        boxShadow: isOpen ? `0 4px 24px ${C.bg}` : "none",
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", flexWrap: "wrap", gap: 8 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: C.textDim, minWidth: 24 }}>{task.id}</span>
-                            <div style={{ width: 8, height: 8, borderRadius: "50%", background: DIFF[task.diff], flexShrink: 0, boxShadow: `0 0 7px ${DIFF[task.diff]}80` }} />
-                            <span style={{ fontSize: 13, fontWeight: 600, color: isOpen ? C.white : C.text }}>{task.title}</span>
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span className="tag" style={{ background: `${DIFF[task.diff]}18`, color: DIFF[task.diff], border: `1px solid ${DIFF[task.diff]}35` }}>{task.diff}</span>
-                            <span style={{ fontSize: 11, fontWeight: 600, color: C.textDim }}>Week {task.week}</span>
-                            <span style={{ fontSize: 11, color: C.textDim, display: "inline-block", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▾</span>
-                          </div>
-                        </div>
-                        {isOpen && (
-                          <div style={{ padding: "0 18px 18px 18px", borderTop: `1px solid ${phase.color}20` }}>
-                            <p style={{ fontSize: 12, color: C.textMid, lineHeight: 1.75, margin: "14px 0 12px" }}>{task.desc}</p>
-                            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 16px", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 8 }}>
-                              <span style={{ fontSize: 10, fontWeight: 800, color: phase.color, letterSpacing: 1.5, flexShrink: 0, marginTop: 1 }}>DELIVERABLE</span>
-                              <span style={{ fontSize: 12, color: C.text }}>→ {task.deliverable}</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-            <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center", paddingTop: 8, borderTop: `1px solid ${C.border}` }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2 }}>DIFFICULTY:</span>
-              {Object.entries(DIFF).map(([k, v]) => (
-                <div key={k} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 9, height: 9, borderRadius: "50%", background: v, boxShadow: `0 0 6px ${v}80` }} />
-                  <span style={{ fontSize: 11, fontWeight: 500, color: C.textMid }}>{k}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ═══ PIPELINE ═══ */}
-        {tab === "Pipeline" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-
-            {/* Architecture */}
-            <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <div style={{ width: 4, height: 20, background: C.cyan, borderRadius: 2 }} />
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.cyan, letterSpacing: 2.5, textTransform: "uppercase" }}>Full Call Flow Architecture</div>
-              </div>
-              <div style={{ overflowX: "auto", paddingBottom: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", minWidth: 960, gap: 0 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <Card color={C.green}>
+                  <SectionHeader color={C.green}>Competitive Advantages You Have</SectionHeader>
                   {[
-                    { label: "CRM", sub: "Lead Data", color: C.cyan, icon: "🗄" },
-                    null, { label: "Webhook", sub: "FastAPI", color: C.cyan, icon: "⚡" },
-                    null, { label: "Telnyx", sub: "SIP/PSTN", color: C.green, icon: "📞" },
-                    null, { label: "LiveKit", sub: "WebRTC", color: C.purple, icon: "🌐" },
-                    null, { label: "VAD", sub: "Silero", color: C.amber, icon: "👂" },
-                    null, { label: "STT", sub: "Whisper", color: C.amber, icon: "📝" },
-                    null, { label: "LLM", sub: "Llama/GPT", color: C.orange, icon: "🧠" },
-                    null, { label: "TTS", sub: "Piper/EL", color: C.pink, icon: "🔊" },
-                    null, { label: "Owner\nPhone", sub: "Hears AI", color: C.green, icon: "📱" },
-                  ].map((node, i) =>
-                    node === null ? (
-                      <div key={i} style={{ fontSize: 22, color: C.border, padding: "0 6px", flexShrink: 0 }}>→</div>
-                    ) : (
-                      <div key={i} style={{
-                        padding: "14px 12px", textAlign: "center", flexShrink: 0,
-                        background: `${node.color}0D`, border: `1px solid ${node.color}30`,
-                        borderRadius: 10, minWidth: 84,
-                        boxShadow: `0 0 14px ${node.color}15`,
-                      }}>
-                        <div style={{ fontSize: 22, marginBottom: 5 }}>{node.icon}</div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: node.color, whiteSpace: "pre-line" }}>{node.label}</div>
-                        <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>{node.sub}</div>
+                    ["CS background", "Setup takes you 1 day vs weeks for non-technical competitors"],
+                    ["Two-person team", "One builds/maintains, one sells — perfect split"],
+                    ["No overhead", "No office, no employees initially — pure margin"],
+                    ["Early mover locally", "Most real estate agents in smaller cities haven't seen this yet"],
+                    ["Iteratable product", "Every client's data makes your script better for the next"],
+                    ["Vapi handles hard parts", "You focus on business logic, not audio engineering"],
+                  ].map(([title, desc], i) => (
+                    <div key={i} style={{ display: "flex", gap: 10, padding: "7px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 12 }}>
+                      <span style={{ color: C.green, fontWeight: 700, flexShrink: 0 }}>+</span>
+                      <div>
+                        <span style={{ fontWeight: 700, color: C.text }}>{title}: </span>
+                        <span style={{ color: C.textMid }}>{desc}</span>
                       </div>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* Outcome flow */}
-              <div style={{ marginTop: 20, paddingTop: 18, borderTop: `1px solid ${C.border}` }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2, marginBottom: 10 }}>OUTCOME FLOW — After call ends</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-                  {[["Call Ends", C.textMid], ["→", C.border], ["Transcript Logged", C.cyan], ["→", C.border], ["Outcome Classified", C.purple], ["→", C.border], ["CRM Updated", C.green], ["→", C.border], ["IF BOOKED →", C.amber], ["Calendly + SMS", C.amber], ["→", C.border], ["IF NO ANSWER →", C.red], ["Retry Scheduled", C.red]].map(([text, color], i) => (
-                    <span key={i} style={{ fontSize: 12, fontWeight: text.includes("→") ? 400 : 600, color }}>{text}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Build vs Use + Latency */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div className="card" style={{ background: C.surface, border: `1px solid ${C.green}25`, borderLeft: `3px solid ${C.green}`, borderRadius: 12, padding: 20, flex: 1 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.green, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 4 }}>You Build This</div>
-                  <div style={{ fontSize: 11, color: C.textDim, marginBottom: 14 }}>Your code. Your logic. Your competitive edge.</div>
-                  {["Conversation prompt & decision logic", "Call state manager", "CRM webhook handler", "Orchestration / glue layer", "Retry & scheduling system", "Outcome classifier", "Booking flow coordinator", "Full call logging system", "Voicemail detection handler", "Monitoring dashboard"].map(item => (
-                    <div key={item} style={{ display: "flex", gap: 8, padding: "6px 0", fontSize: 12, color: C.text, borderBottom: `1px solid ${C.border}25` }}>
-                      <span style={{ color: C.green, fontWeight: 700, flexShrink: 0 }}>→</span>{item}
                     </div>
                   ))}
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div className="card" style={{ background: C.surface, border: `1px solid ${C.amber}25`, borderLeft: `3px solid ${C.amber}`, borderRadius: 12, padding: 20 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 4 }}>You Use This</div>
-                  <div style={{ fontSize: 11, color: C.textDim, marginBottom: 14 }}>Commodity infrastructure. Like electricity.</div>
-                  {[["Pipecat", "Pipeline framework"], ["LiveKit", "WebRTC transport"], ["Telnyx", "SIP / telephony"], ["Whisper / Deepgram", "Speech to text"], ["Llama 3.1 / GPT-4o-mini", "LLM reasoning"], ["Piper / ElevenLabs", "Text to speech"], ["Silero VAD", "Voice activity detection"], ["Calendly API", "Appointment booking"], ["Twilio", "SMS reminders"], ["APScheduler", "Retry logic"]].map(([tool, desc]) => (
-                    <div key={tool} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${C.border}25` }}>
-                      <div style={{ display: "flex", gap: 8, fontSize: 12, color: C.text }}>
-                        <span style={{ color: C.amber, fontWeight: 700, flexShrink: 0 }}>↗</span>{tool}
-                      </div>
-                      <span style={{ fontSize: 11, color: C.textDim }}>{desc}</span>
-                    </div>
-                  ))}
-                </div>
+                </Card>
 
-                {/* Latency */}
-                <div className="card" style={{ background: C.surface, border: `1px solid ${C.red}25`, borderRadius: 12, padding: 20 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: C.red, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 14 }}>Latency Targets — #1 Technical Challenge</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
-                    {[
-                      { stage: "STT", target: "<300ms", local: "800–1200ms" },
-                      { stage: "LLM", target: "<400ms", local: "500–1500ms" },
-                      { stage: "TTS", target: "<200ms", local: "300–800ms" },
-                    ].map(r => (
-                      <div key={r.stage} style={{ padding: 12, background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 8, textAlign: "center" }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: C.textMid, marginBottom: 4 }}>{r.stage}</div>
-                        <div style={{ fontSize: 15, fontWeight: 800, color: C.green }}>{r.target}</div>
-                        <div style={{ fontSize: 10, color: C.red, marginTop: 3 }}>local: {r.local}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ padding: "10px 12px", background: `${C.red}0C`, border: `1px solid ${C.red}20`, borderRadius: 7 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: C.red }}>Total: &lt;1.1s required · Local: 3.6–6.5s</div>
-                    <div style={{ fontSize: 11, color: C.textMid, marginTop: 3 }}>Acceptable during dev. Cloud APIs mandatory for real homeowner calls.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ═══ COSTS ═══ */}
-        {tab === "Costs" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-
-            {/* Monthly breakdown */}
-            <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <div style={{ width: 4, height: 20, background: C.amber, borderRadius: 2 }} />
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.amber, letterSpacing: 2.5, textTransform: "uppercase" }}>Monthly Cost Breakdown — 200 calls/day, ~4,400 calls/month</div>
-              </div>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ borderBottom: `1px solid ${C.border}` }}>
-                      {["Service", "What It Does", "Rate", "Monthly Usage", "Est. Cost"].map(h => (
-                        <th key={h} style={{ padding: "8px 14px", fontSize: 10, fontWeight: 700, color: C.textDim, textAlign: "left", letterSpacing: 1.5, textTransform: "uppercase" }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { s: "Deepgram STT", w: "Speech to text", r: "$0.0043/min", u: "~3,500 answered mins", cost: "$10–28", c: C.cyan },
-                      { s: "ElevenLabs TTS", w: "Text to speech", r: "$0.18/1k chars", u: "~200k chars/mo", cost: "$25–45", c: C.purple },
-                      { s: "GPT-4o-mini", w: "LLM reasoning", r: "$0.15/1M tokens", u: "~880k tokens/mo", cost: "$15–30", c: C.orange },
-                      { s: "Telnyx Telephony", w: "Outbound calls", r: "$0.013/min", u: "~6,600 mins/mo", cost: "$70–100", c: C.green },
-                      { s: "Hetzner VPS", w: "24/7 server", r: "flat rate", u: "CX31 or similar", cost: "$20–35", c: C.amber },
-                      { s: "DNC Compliance", w: "Legal scrubbing", r: "flat rate", u: "per list batch", cost: "$25–50", c: C.red },
-                      { s: "Calendly", w: "Appointment booking", r: "flat rate", u: "unlimited bookings", cost: "$0–12", c: C.textMid },
-                    ].map((row, i) => (
-                      <tr key={i} style={{ borderBottom: `1px solid ${C.border}25`, background: i % 2 === 0 ? C.surfaceHigh : "transparent" }}>
-                        <td style={{ padding: "12px 14px", fontSize: 13, fontWeight: 700, color: row.c }}>{row.s}</td>
-                        <td style={{ padding: "12px 14px", fontSize: 12, color: C.textMid }}>{row.w}</td>
-                        <td style={{ padding: "12px 14px", fontSize: 12, color: C.text }}>{row.r}</td>
-                        <td style={{ padding: "12px 14px", fontSize: 12, color: C.textMid }}>{row.u}</td>
-                        <td style={{ padding: "12px 14px", fontSize: 13, fontWeight: 700, color: C.amber }}>{row.cost}</td>
-                      </tr>
-                    ))}
-                    <tr style={{ borderTop: `1px solid ${C.border}`, background: C.surfaceHigh }}>
-                      <td colSpan={4} style={{ padding: "14px 14px", fontSize: 13, fontWeight: 700, color: C.text }}>TOTAL MONTHLY</td>
-                      <td style={{ padding: "14px 14px", fontSize: 16, fontWeight: 800, fontFamily: "'Syne', sans-serif", color: C.amber, textShadow: `0 0 16px ${C.amber}60` }}>$165–300/mo</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Scale + One-time */}
-            <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 16 }}>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Cost At Different Scales</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+                <Card color={C.amber}>
+                  <SectionHeader color={C.amber}>Realistic Failure Scenarios</SectionHeader>
                   {[
-                    { scale: "Testing", calls: 20, cost: "$30", c: C.green },
-                    { scale: "Early", calls: 100, cost: "$100", c: C.cyan },
-                    { scale: "Real", calls: 200, cost: "$165–300", c: C.amber },
-                    { scale: "Scaling", calls: 500, cost: "$400–600", c: C.red },
-                  ].map(row => (
-                    <div key={row.scale} className="card" style={{
-                      padding: 18, background: C.surface, border: `1px solid ${C.border}`,
-                      borderRadius: 10, textAlign: "center",
-                    }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, letterSpacing: 2, marginBottom: 8 }}>{row.scale.toUpperCase()}</div>
-                      <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 800, color: row.c, textShadow: `0 0 12px ${row.c}50` }}>{row.cost}</div>
-                      <div style={{ fontSize: 11, color: C.textMid, marginTop: 4 }}>/month</div>
-                      <div style={{ fontSize: 11, color: C.textDim, marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>{row.calls} calls/day</div>
+                    { scenario: "Can't close first client", prob: "30%", fix: "Offer first month free or at cost. One result beats any pitch." },
+                    { scenario: "Script never converts", prob: "20%", fix: "Join real estate investor groups, study existing scripts, iterate 20+ versions." },
+                    { scenario: "Compliance issue halts", prob: "15%", fix: "Budget $300 for legal review before first campaign. Non-negotiable." },
+                    { scenario: "Vapi cost too high at scale", prob: "15%", fix: "At scale, migrate hot logic to own stack. Vapi is for learning phase." },
+                  ].map((s, i) => (
+                    <div key={i} style={{ padding: "10px 12px", background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 7, marginBottom: 8 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: C.amber }}>{s.scenario}</span>
+                        <span style={{ fontSize: 11, color: C.red, fontWeight: 600 }}>P: {s.prob}</span>
+                      </div>
+                      <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.6 }}>Fix: {s.fix}</div>
+                    </div>
+                  ))}
+                </Card>
+              </div>
+            </div>
+
+            {/* Decision tree */}
+            <Card color={C.cyan}>
+              <SectionHeader color={C.cyan}>Decision: Build Own Stack Later vs Stay on Vapi</SectionHeader>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.cyan, marginBottom: 12 }}>Stay on Vapi if:</div>
+                  {["Revenue under $15K/month — margin is fine", "Less than 30,000 calls/month volume", "Team is 2 people or less — bandwidth limited", "Clients don't demand data portability", "You want to focus on sales not engineering"].map((item, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, padding: "6px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 12, color: C.textMid }}>
+                      <span style={{ color: C.cyan, fontWeight: 700 }}>✓</span>{item}
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.amber, marginBottom: 12 }}>Migrate to own stack when:</div>
+                  {["Revenue above $15K/month consistently", "Vapi costs eating 30%+ of margin", "You have 5+ clients demanding SLAs", "You want to expand to other industries", "You have engineering time to spare from revenue"].map((item, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, padding: "6px 0", borderBottom: `1px solid ${C.border}25`, fontSize: 12, color: C.textMid }}>
+                      <span style={{ color: C.amber, fontWeight: 700 }}>→</span>{item}
                     </div>
                   ))}
                 </div>
               </div>
-
-              <div className="card" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 22 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.cyan, letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 16 }}>One-Time Setup Costs</div>
-                {[
-                  { item: "Domain + SSL", cost: "$15/year", note: "" },
-                  { item: "Server setup", cost: "$0", note: "your time" },
-                  { item: "Legal / TCPA review", cost: "$200–500", note: "⚠ DO NOT SKIP" },
-                ].map((row, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "11px 0", borderBottom: `1px solid ${C.border}30` }}>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: C.text }}>{row.item}</div>
-                      {row.note && <div style={{ fontSize: 11, color: row.note.includes("SKIP") ? C.red : C.textDim, marginTop: 2 }}>{row.note}</div>}
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: C.amber }}>{row.cost}</span>
-                  </div>
-                ))}
-                <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 0 0" }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>TOTAL</span>
-                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 800, color: C.amber }}>$215–515</span>
-                </div>
+              <div style={{ marginTop: 14, padding: "12px 16px", background: `${C.cyan}0A`, border: `1px solid ${C.cyan}25`, borderRadius: 8, fontSize: 12, color: C.textMid }}>
+                <span style={{ color: C.cyan, fontWeight: 700 }}>Bottom line: </span>
+                Start on Vapi. Make money. At $15K/month revenue you can afford to hire someone to build the custom stack while you keep selling. Don't optimize infrastructure before you have customers.
               </div>
-            </div>
-
-            {/* ROI */}
-            <div className="card" style={{ background: C.surface, border: `1px solid ${C.green}25`, borderRadius: 12, padding: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-                <div style={{ width: 4, height: 20, background: C.green, borderRadius: 2 }} />
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.green, letterSpacing: 2.5, textTransform: "uppercase" }}>Quick ROI — Why The Numbers Work</div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
-                {[
-                  { label: "Average listing commission", value: "$8–15K", c: C.green },
-                  { label: "Monthly running cost", value: "$165–300", c: C.amber },
-                  { label: "Commissions to cover years of cost", value: "1 = 2 yrs", c: C.cyan },
-                  { label: "Appointments/week at 200 calls/day", value: "2–8", c: C.purple },
-                  { label: "Listings/month (30–50% close rate)", value: "1–3", c: C.green },
-                  { label: "Revenue potential per month", value: "$8K–45K", c: C.amber },
-                ].map(stat => (
-                  <div key={stat.label} style={{ padding: 16, background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 8 }}>
-                    <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 800, color: stat.c, textShadow: `0 0 12px ${stat.c}50` }}>{stat.value}</div>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: C.textMid, marginTop: 6, lineHeight: 1.5 }}>{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ marginTop: 16, padding: "13px 16px", background: `${C.green}0C`, border: `1px solid ${C.green}25`, borderRadius: 8, fontSize: 13, fontWeight: 700, color: C.green }}>
-                One listing commission covers 2–4 years of monthly running costs. This is why the economics work.
-              </div>
-            </div>
-
+            </Card>
           </div>
         )}
 
         {/* Footer */}
         <div style={{ marginTop: 32, paddingTop: 20, borderTop: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-          <span style={{ fontSize: 11, fontWeight: 500, color: C.textDim }}>Phase 1–6 · 12 Weeks · $0 Cost · Local Build · Full Edge Case Coverage</span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: C.textDim }}>After Week 12 → spend first real money → 20 calls/day → scale</span>
+          <span style={{ fontSize: 11, fontWeight: 500, color: C.textDim }}>Revised Plan · Vapi Stack · 8-Week Build · B2B Lead-Gen Service Model</span>
+          <span style={{ fontSize: 11, fontWeight: 500, color: C.textDim }}>Week 8 → first client → $1,500–7,000/mo → scale to $20K+</span>
         </div>
       </div>
     </div>
