@@ -1,4 +1,4 @@
-import ProjectPlan from './New_plan'
+import ProjectPlan from './ProjectPlan'
 
 function App() {
   return (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { VapiGuideContent } from './VapiMoneyGuide';
 
 const C = {
   bg: "#06070F", surface: "#0C0E1C", surfaceHigh: "#111428", surfaceHover: "#161930",
@@ -13,7 +14,7 @@ const C = {
   text: "#E8EAF6", textMid: "#9094B0", textDim: "#3E4268", white: "#FFFFFF",
 };
 
-const TABS = ["Overview", "Learning Path", "Build Plan", "Lead Sourcing", "Business Model", "Costs & ROI", "Feasibility"];
+const TABS = ["Overview", "Learning Path", "Build Plan", "Lead Sourcing", "Business Model", "Costs & ROI", "Feasibility", "Execution Guide"];
 
 const LEARNING = [
   {
@@ -1341,6 +1342,17 @@ export default function App() {
                 Start on Vapi. Make money. At $15K/month revenue you can afford to hire someone to build the custom stack while you keep selling. Don't optimize infrastructure before you have customers.
               </div>
             </Card>
+          </div>
+        )}
+
+        {/* ══════════════════ EXECUTION GUIDE ══════════════════ */}
+        {tab === "Execution Guide" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <div style={{ padding: "14px 18px", background: `${C.amber}0A`, border: `1px solid ${C.amber}25`, borderRadius: 10, fontSize: 12, color: C.textMid, lineHeight: 1.7 }}>
+              <span style={{ color: C.amber, fontWeight: 700 }}>Full Execution Guide — </span>
+              Day-by-day instructions, real code snippets, outreach templates, sales scripts, and tech setup walkthroughs. Everything you need to go from zero to first paying client.
+            </div>
+            <VapiGuideContent />
           </div>
         )}
 
