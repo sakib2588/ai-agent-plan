@@ -335,7 +335,7 @@ sudo systemctl status docker
 # Test installation
 sudo docker run hello-world`} />
         <CodeBlock lang="bash" label="STEP 4 — ADD YOUR USER TO DOCKER GROUP (AVOID SUDO)" code={`# Add current user to docker group — critical for non-root usage
-sudo usermod -aG docker ${USER}
+      sudo usermod -aG docker \${USER}
 
 # Apply group change immediately (or log out/in)
 newgrp docker
@@ -374,11 +374,11 @@ PG_PASS=$(openssl rand -hex 16)
 cat > ~/vapi-agency/.env << EOF
 # PostgreSQL
 POSTGRES_USER=n8n_user
-POSTGRES_PASSWORD=${PG_PASS}
+POSTGRES_PASSWORD=\${PG_PASS}
 POSTGRES_DB=n8n
 
 # n8n
-N8N_ENCRYPTION_KEY=${N8N_KEY}
+N8N_ENCRYPTION_KEY=\${N8N_KEY}
 N8N_BASIC_AUTH_ACTIVE=true
 N8N_BASIC_AUTH_USER=admin
 N8N_BASIC_AUTH_PASSWORD=changeme123
@@ -1568,11 +1568,11 @@ if __name__ == '__main__':
 // │ Auth: Bearer {{ $env.VAPI_API_KEY }}                │
 // │ Body:                                               │
 // │ {                                                   │
-// │   "assistantId": "{{ $env.VAPI_ASSISTANT_ID }}",   │
-// │   "phoneNumberId": "{{ $env.VAPI_PHONE_ID }}",     │
+// │   "assistantId": "{{ $env.VAPI_ASSISTANT_ID }}",    │
+// │   "phoneNumberId": "{{ $env.VAPI_PHONE_ID }}",      │
 // │   "customer": {                                     │
 // │     "number": "{{ $json.phone }}",                  │
-// │     "name": "{{ $json.first_name }}"               │
+// │     "name": "{{ $json.first_name }}"                │
 // │   }                                                 │
 // │ }                                                   │
 // │ Response: capture - will contain call.id            │
