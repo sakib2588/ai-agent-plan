@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { VapiGuideContent } from './VapiMoneyGuide';
+import { VapiGuideContent } from './vapi_plan';
 
 const C = {
   bg: "#06070F", surface: "#0C0E1C", surfaceHigh: "#111428", surfaceHover: "#161930",
